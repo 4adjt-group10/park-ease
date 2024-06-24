@@ -1,0 +1,30 @@
+package com.parkease.driver.application;
+
+import com.parkease.driver.application.dto.DriverDTO;
+import com.parkease.driver.application.dto.DriverFormDTO;
+import com.parkease.driver.domain.DriverService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/driver")
+public class DriverController {
+
+    private final DriverService driverService;
+
+    public DriverController(DriverService driverService) {
+        this.driverService = driverService;
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<DriverDTO>> listDrivers() {
+        return ResponseEntity.ok(driverService.listDrivers());
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<DriverDTO> createDriver(@RequestBody DriverFormDTO formDTO) {
+        return ResponseEntity.ok(driverService.createDriver(formDTO));
+    }
+}

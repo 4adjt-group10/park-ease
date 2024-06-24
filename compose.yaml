@@ -1,0 +1,64 @@
+services:
+  mongodb:
+    container_name: mongodb
+    image: 'mongo:latest'
+    volumes:
+      - mongo-data:/data/db/mongodb
+    environment:
+      - 'MONGO_INITDB_DATABASE=parkesase'
+      - 'MONGO_INITDB_ROOT_USERNAME=root'
+      - 'MONGO_INITDB_ROOT_PASSWORD=secret'
+    ports:
+      - '27017:27017'
+    networks:
+        - mongo-network
+
+  mongo-express:
+    container_name: mongo-express
+    image: 'mongo-express:latest'
+    restart: always
+    ports:
+      - '8081:8081'
+    environment:
+      - 'ME_CONFIG_MONGODB_SERVER=mongodb'
+      - 'ME_CONFIG_MONGODB_ADMINUSERNAME=root'
+      - 'ME_CONFIG_MONGODB_ADMINPASSWORD=secret'
+    networks:
+      - mongo-network
+
+  postgres:
+    container_name: postgres
+    image: 'postgres:latest'
+    volumes:
+      - postgres-data:/data/db/postgres
+    environment:
+      - 'POSTGRES_DB=mydatabase'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_USER=myuser'
+    ports:
+      - '5432:5432'
+    networks:
+      - postgres-network
+
+  java:
+    container_name: java
+    image: 'maven:3.8.4-openjdk-17'
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: bash -c "mvn clean install && java -jar target/ParkEase.jar"
+    ports:
+      - '8080:8080'
+    networks:
+      - mongo-network
+      - postgres-network
+
+volumes:
+  postgres-data: {}
+  mongo-data: {}
+
+networks:
+  postgres-network:
+      name: postgres-network
+  mongo-network:
+      name: mongo-network
