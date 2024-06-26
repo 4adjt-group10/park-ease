@@ -4,7 +4,7 @@ services:
     image: mongo:latest
     restart: unless-stopped
     volumes:
-      - mongo-data:/data/db/mongodb
+      - ./data/db/mongodb:/data/db
     environment:
       - MONGO_INITDB_DATABASE=parkesase
       - MONGO_INITDB_ROOT_USERNAME=root
@@ -38,7 +38,7 @@ services:
     image: postgres:latest
     restart: unless-stopped
     volumes:
-      - postgres-data:/data/db/postgres
+      - ./data/db/postgres:/data/db
     environment:
       - POSTGRES_DB=mydatabase
       - POSTGRES_PASSWORD=secret
@@ -75,10 +75,6 @@ services:
     depends_on:
       - mongodb
       - postgres
-
-volumes:
-  postgres-data: {}
-  mongo-data: {}
 
 networks:
   postgres-network:
