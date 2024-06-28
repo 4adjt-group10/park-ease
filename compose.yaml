@@ -12,7 +12,7 @@ services:
     ports:
       - 27017:27017
     networks:
-        - mongo-network
+      - mongo-network
 
   mongo-express:
     container_name: mongo-express
@@ -38,7 +38,7 @@ services:
     image: postgres:latest
     restart: unless-stopped
     volumes:
-      - ./data/db/postgres:/data/db
+      - ./data/db/postgres:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=mydatabase
       - POSTGRES_PASSWORD=secret
