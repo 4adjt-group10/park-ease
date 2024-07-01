@@ -3,6 +3,7 @@ package com.parkease.driver.application;
 import com.parkease.driver.application.dto.DriverDTO;
 import com.parkease.driver.application.dto.DriverFormDTO;
 import com.parkease.driver.domain.DriverService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class DriverController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<DriverDTO> createDriver(@RequestBody DriverFormDTO formDTO) {
+    public ResponseEntity<DriverDTO> createDriver(@RequestBody @Valid DriverFormDTO formDTO) {
         return ResponseEntity.ok(driverService.createDriver(formDTO));
     }
 }

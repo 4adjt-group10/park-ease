@@ -1,4 +1,14 @@
 package com.parkease.driver.application.dto;
 
-public record DriverFormDTO(String firstName, String lastName, String email, String phone, AddressFormDTO address) {
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record DriverFormDTO(
+        @NotBlank String firstName,
+        @NotBlank String lastName,
+        @Nullable String email,
+        @NotBlank String phone,
+        @NotNull AddressFormDTO address
+) {
 }

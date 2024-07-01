@@ -1,4 +1,12 @@
 package com.parkease.driver.application.dto;
 
-public record AddressFormDTO(String address, String city, String state, String zipCode, String country) {
+import jakarta.validation.constraints.NotBlank;
+
+public record AddressFormDTO(
+        @NotBlank String address,
+        @NotBlank String city,
+        @NotBlank String state,
+        @NotBlank String zipCode,
+        @NotBlank String country
+) {
 }
