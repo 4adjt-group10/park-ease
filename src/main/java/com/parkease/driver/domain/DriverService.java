@@ -1,6 +1,5 @@
 package com.parkease.driver.domain;
 
-import com.parkease.driver.application.dto.AddressDTO;
 import com.parkease.driver.application.dto.DriverDTO;
 import com.parkease.driver.application.dto.DriverFormDTO;
 import com.parkease.driver.infrastructure.DriverRepository;
@@ -28,8 +27,8 @@ public class DriverService {
         return new DriverDTO(newDriver);
     }
 
-    public DriverDTO getById(String id) {
-        return driverRepository.findById(id).map(DriverDTO::new).orElseThrow(EntityNotFoundException::new);
+    public Driver findById(String id) {
+        return driverRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     public void updateDriver(Driver driver) {
@@ -37,12 +36,6 @@ public class DriverService {
     }
 
     public List<DriverDTO> listDrivers() {
-        return driverRepository.findAll().stream()
-                .map(driver -> new DriverDTO(driver.getId(),
-                        driver.getFullName(),
-                        driver.getEmail(),
-                        driver.getPhone(),
-                        new AddressDTO(driver.getAddress())))
-                .toList();
+        return driverRepository.findAll().stream().map(DriverDTO::new).toList();
     }
 }

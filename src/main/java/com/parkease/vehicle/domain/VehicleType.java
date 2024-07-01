@@ -9,7 +9,7 @@ public enum VehicleType {
     BUS("Bus"),
     OTHER("Other");
 
-    private String description;
+    private final String description;
 
     VehicleType(String description) {
         this.description = description;
