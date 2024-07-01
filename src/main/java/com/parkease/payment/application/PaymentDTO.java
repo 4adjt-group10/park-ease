@@ -6,10 +6,16 @@ import com.parkease.payment.domain.PaymentMethod;
 import com.parkease.payment.domain.PaymentStatus;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-public record PaymentDTO(DriverDTO driver, BigDecimal amount, PaymentMethod paymentMethod, PaymentStatus status) {
+public record PaymentDTO(String id, DriverDTO driver, BigDecimal amount, PaymentMethod paymentMethod, PaymentStatus status, LocalDateTime creationDate) {
 
     public PaymentDTO(Payment payment) {
-        this(new DriverDTO(payment.getDriver()), payment.getAmount(), payment.getPaymentMethod(), payment.getStatus());
+        this(payment.getId(),
+                new DriverDTO(payment.getDriver()),
+                payment.getAmount(),
+                payment.getPaymentMethod(),
+                payment.getStatus(),
+                payment.getCreationDate());
     }
 }

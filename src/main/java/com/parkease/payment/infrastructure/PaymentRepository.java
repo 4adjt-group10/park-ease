@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface PaymentRepository extends MongoRepository<Payment, String> {
 
-    Optional<Payment> findFirstByDriverIdOrderByIdDesc(String driverId);
+    Optional<Payment> findFirstByDriverIdOrderByCreationDateDesc(String driverId);
 }

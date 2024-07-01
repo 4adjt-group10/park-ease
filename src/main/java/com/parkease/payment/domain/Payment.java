@@ -5,6 +5,7 @@ import com.parkease.payment.application.PaymentFormDTO;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Document
 public class Payment {
@@ -14,12 +15,14 @@ public class Payment {
     private BigDecimal amount;
     private PaymentMethod paymentMethod;
     private PaymentStatus status;
+    private LocalDateTime creationDate;
 
     public Payment(Driver driver, BigDecimal amount, PaymentMethod paymentMethod, PaymentStatus status) {
         this.driver = driver;
         this.amount = amount;
         this.paymentMethod = paymentMethod;
         this.status = status;
+        this.creationDate = LocalDateTime.now();
     }
 
     public Payment(Driver driver, PaymentFormDTO formDTO) {
@@ -48,5 +51,9 @@ public class Payment {
 
     public PaymentStatus getStatus() {
         return status;
+    }
+
+    public LocalDateTime getCreationDate() {
+        return creationDate;
     }
 }

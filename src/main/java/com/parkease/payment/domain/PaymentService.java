@@ -36,7 +36,7 @@ public class PaymentService {
     }
 
     public PaymentDTO findLastByDriver(String id) {
-        return paymentRepository.findFirstByDriverIdOrderByIdDesc(id).map(PaymentDTO::new).orElseThrow(EntityNotFoundException::new);
+        return paymentRepository.findFirstByDriverIdOrderByCreationDateDesc(id).map(PaymentDTO::new).orElseThrow(EntityNotFoundException::new);
     }
 
 }
