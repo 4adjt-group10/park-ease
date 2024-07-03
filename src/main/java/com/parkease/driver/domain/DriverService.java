@@ -1,7 +1,7 @@
 package com.parkease.driver.domain;
 
-import com.parkease.driver.application.dto.DriverDTO;
-import com.parkease.driver.application.dto.DriverFormDTO;
+import com.parkease.driver.application.DriverDTO;
+import com.parkease.driver.application.DriverFormDTO;
 import com.parkease.driver.infrastructure.DriverRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;

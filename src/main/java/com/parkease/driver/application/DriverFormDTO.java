@@ -1,4 +1,4 @@
-package com.parkease.driver.application.dto;
+package com.parkease.driver.application;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
