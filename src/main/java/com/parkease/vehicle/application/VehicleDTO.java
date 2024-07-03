@@ -1,6 +1,7 @@
 package com.parkease.vehicle.application;
 
 import com.parkease.vehicle.domain.Vehicle;
+import com.parkease.vehicle.domain.VehicleType;
 
 public record VehicleDTO(String id,
                          String brand,
@@ -9,7 +10,7 @@ public record VehicleDTO(String id,
                          Integer year,
                          String licensePlate,
                          String driverId,
-                         String type) {
+                         VehicleType type) {
 
     public VehicleDTO(Vehicle vehicle) {
         this(vehicle.getId(),
@@ -19,6 +20,6 @@ public record VehicleDTO(String id,
                 vehicle.getYear(),
                 vehicle.getLicensePlate(),
                 vehicle.getDriverId(),
-                vehicle.getType().name());
+                vehicle.getType());
     }
 }

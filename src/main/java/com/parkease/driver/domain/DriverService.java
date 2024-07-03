@@ -31,6 +31,10 @@ public class DriverService {
         return driverRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
+    public DriverDTO getDriverById(String id) {
+        return new DriverDTO(findById(id));
+    }
+
     public void updateDriver(Driver driver) {
         driverRepository.save(driver);
     }

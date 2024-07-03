@@ -1,46 +1,35 @@
 package com.parkease.admin.apllication;
 
-import com.parkease.admin.domain.PriceService;
-import jakarta.validation.Valid;
+import com.parkease.parkingmeter.application.ParkingSpaceFormDTO;
+import com.parkease.parkingmeter.application.ParkingZoneDTO;
+import com.parkease.parkingmeter.application.ParkingZoneFormDTO;
+import com.parkease.parkingmeter.domain.ParkingZoneService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.net.URI;
 
 @RestController
-@RequestMapping("/admin/price")
+@RequestMapping("/admin")
 public class AdministratorController {
 
-    private final PriceService priceService;
+    private final ParkingZoneService parkingZoneService;
 
-    public AdministratorController(PriceService priceService) {
-        this.priceService = priceService;
+    public AdministratorController(ParkingZoneService parkingZoneService) {
+        this.parkingZoneService = parkingZoneService;
     }
 
-    @GetMapping("/listall")
-    public ResponseEntity<List<PriceDTO>> findAllValues() {
-        return ResponseEntity.ok(priceService.findAll());
+    @PostMapping("/parking-zone/create")
+    public ResponseEntity<ParkingZoneDTO> createParkingZone(@RequestBody ParkingZoneFormDTO formDTO) {
+        ParkingZoneDTO parkingZoneDTO = parkingZoneService.createParkingZone(formDTO);
+        return ResponseEntity.created(URI.create("/parking-zone/" + parkingZoneDTO.id())).body(parkingZoneDTO);
     }
 
-    @GetMapping("/list/{id}")
-    public ResponseEntity<PriceDTO> findById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(priceService.findPriceById(id));
-    }
-
-    @PostMapping("/create")
-    public ResponseEntity<PriceDTO> create(@RequestBody @Valid PriceFormDTO formDTO) {
-        return ResponseEntity.ok(priceService.createNewPrice(formDTO));
-    }
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<PriceDTO> update(@PathVariable("id") Long id, @RequestBody @Valid PriceFormDTO formDTO) {
-        return ResponseEntity.ok(priceService.updatePriceById(id, formDTO));
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        priceService.deletePrice(id);
-        return ResponseEntity.noContent().build();
+    @PostMapping("/parking-space/create/{zoneId}")
+    public ResponseEntity<String> createParkingSpace(@RequestBody ParkingSpaceFormDTO formDTO,
+                                                     @PathVariable String zoneId) {
+        parkingZoneService.addParkingSpace(zoneId, formDTO);
+        return ResponseEntity.ok().body("Parking space created successfully");
     }
 
 }

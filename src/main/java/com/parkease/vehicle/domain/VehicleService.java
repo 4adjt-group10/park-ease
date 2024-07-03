@@ -26,6 +26,10 @@ public class VehicleService {
         return vehicleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Vehicle not found with id: " + id));
     }
 
+    public VehicleDTO getVehicleById(String id) {
+        return new VehicleDTO(findById(id));
+    }
+
     public List<VehicleDTO> findAll() {
         return vehicleRepository.findAll().stream().map(VehicleDTO::new).toList();
     }
