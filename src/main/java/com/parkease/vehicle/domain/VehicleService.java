@@ -5,7 +5,6 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class VehicleService {
@@ -20,7 +19,7 @@ public class VehicleService {
         return vehicleRepository.save(vehicle);
     }
 
-    public Vehicle findById(UUID id) {
+    public Vehicle findById(String id) {
         return vehicleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Vehicle not found with id: " + id));
     }
 
@@ -28,7 +27,7 @@ public class VehicleService {
         return vehicleRepository.findAll();
     }
 
-    public void delete(UUID id) {
+    public void delete(String id) {
         vehicleRepository.deleteById(id);
     }
 }
