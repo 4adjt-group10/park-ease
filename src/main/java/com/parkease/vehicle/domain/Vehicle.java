@@ -1,17 +1,16 @@
 package com.parkease.vehicle.domain;
 
 import com.parkease.vehicle.application.dto.VehicleFormDTO;
-import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
-@Entity
+@Document
 public class Vehicle {
 
     @Id
-    private UUID id;
+    private String id;
     private String brand;
     private String model;
     private String color;
@@ -27,7 +26,6 @@ public class Vehicle {
                    String licensePlate,
                    String driverId,
                    VehicleType type) {
-        this.id = UUID.randomUUID();
         this.brand = brand;
         this.model = model;
         this.color = color;
@@ -51,7 +49,7 @@ public class Vehicle {
     public Vehicle() {
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
