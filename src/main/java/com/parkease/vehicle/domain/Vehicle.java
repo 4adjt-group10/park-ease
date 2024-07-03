@@ -9,7 +9,6 @@ import java.time.LocalDate;
 @Document
 public class Vehicle {
 
-    @Id
     private String id;
     private String brand;
     private String model;
