@@ -1,13 +1,11 @@
-package com.parkease.vehicle.application.dto;
+package com.parkease.vehicle.application;
 
 import com.parkease.vehicle.domain.VehicleType;
-
-import java.time.LocalDate;
 
 public record VehicleFormDTO(String brand,
                              String model,
                              String color,
-                             LocalDate year,
+                             Integer year,
                              String licensePlate,
                              String driverId,
                              VehicleType type) {

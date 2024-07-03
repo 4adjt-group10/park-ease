@@ -1,7 +1,5 @@
 package com.parkease.vehicle.application;
 
-import com.parkease.vehicle.application.dto.VehicleFormDTO;
-import com.parkease.vehicle.domain.Vehicle;
 import com.parkease.vehicle.domain.VehicleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/vehicles")
+@RequestMapping("/vehicle")
 public class VehicleController {
 
     private final VehicleService vehicleService;
@@ -22,12 +20,12 @@ public class VehicleController {
     }
 
     @GetMapping("/list-all")
-    public ResponseEntity<List<Vehicle>> listAll() {
+    public ResponseEntity<List<VehicleDTO>> listAll() {
         return ResponseEntity.ok(vehicleService.findAll());
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Vehicle> create(VehicleFormDTO formDTO) {
-        return ResponseEntity.ok(vehicleService.save(new Vehicle(formDTO)));
+    public ResponseEntity<VehicleDTO> create(VehicleFormDTO formDTO) {
+        return ResponseEntity.ok(vehicleService.save(formDTO));
     }
 }

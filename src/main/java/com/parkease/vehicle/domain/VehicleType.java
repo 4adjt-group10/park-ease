@@ -3,11 +3,11 @@ package com.parkease.vehicle.domain;
 public enum VehicleType {
     SEDAN("Sedan"),
     SUV("SUV"),
-    TRUCK("Truck"),
-    MOTORCYCLE("Motorcycle"),
-    VAN("Van"),
-    BUS("Bus"),
-    OTHER("Other");
+    TRUCK("Caminhão"),
+    MOTORCYCLE("Moto"),
+    VAN("Vã"),
+    BUS("Ônibus"),
+    OTHER("Outro");
 
     private final String description;
 
