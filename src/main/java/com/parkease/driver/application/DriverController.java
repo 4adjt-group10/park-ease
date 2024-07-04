@@ -1,7 +1,5 @@
 package com.parkease.driver.application;
 
-import com.parkease.driver.application.dto.DriverDTO;
-import com.parkease.driver.application.dto.DriverFormDTO;
 import com.parkease.driver.domain.DriverService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
