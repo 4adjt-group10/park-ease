@@ -18,6 +18,7 @@ public class PriceService {
         return priceRepository.findAll().stream().map(PriceDTO::new).toList();
     }
 
+
     public PriceDTO findPriceById(Long id) {
         return priceRepository.findById(id).map(PriceDTO::new).orElseThrow(EntityNotFoundException::new);
 
