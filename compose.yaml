@@ -66,9 +66,10 @@ services:
     volumes:
       - ./:/app
     working_dir: /app
-    command: bash -c "mvn clean install && java -jar target/ParkEase.jar"
+    command: bash -c "mvn clean install && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar target/ParkEase.jar"
     ports:
       - 8080:8080
+      - 5005:5005
     networks:
       - mongo-network
       - postgres-network
