@@ -1,6 +1,6 @@
 package com.parkease.payment.application;
 
-import com.parkease.driver.application.dto.DriverDTO;
+import com.parkease.driver.application.DriverDTO;
 import com.parkease.payment.domain.Payment;
 import com.parkease.payment.domain.PaymentMethod;
 import com.parkease.payment.domain.PaymentStatus;

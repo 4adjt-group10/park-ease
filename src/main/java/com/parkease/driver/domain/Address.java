@@ -1,6 +1,6 @@
 package com.parkease.driver.domain;
 
-import com.parkease.driver.application.dto.AddressFormDTO;
+import com.parkease.driver.application.AddressFormDTO;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document

@@ -1,10 +1,7 @@
 package com.parkease.vehicle.domain;
 
-import com.parkease.vehicle.application.dto.VehicleFormDTO;
-import jakarta.persistence.Id;
+import com.parkease.vehicle.application.VehicleFormDTO;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.time.LocalDate;
 
 @Document
 public class Vehicle {
@@ -13,7 +10,7 @@ public class Vehicle {
     private String brand;
     private String model;
     private String color;
-    private LocalDate year;
+    private Integer year;
     private String licensePlate;
     private String driverId;
     private VehicleType type;
@@ -21,7 +18,7 @@ public class Vehicle {
     public Vehicle(String brand,
                    String model,
                    String color,
-                   LocalDate year,
+                   Integer year,
                    String licensePlate,
                    String driverId,
                    VehicleType type) {
@@ -44,6 +41,11 @@ public class Vehicle {
                 formDTO.type());
     }
 
+    public Vehicle(VehicleFormDTO formDTO, String driverId) {
+        this(formDTO);
+        this.driverId = driverId;
+    }
+
     @Deprecated(since = "Only for frameworks use")
     public Vehicle() {
     }
@@ -56,7 +58,7 @@ public class Vehicle {
         return licensePlate;
     }
 
-    public LocalDate getYear() {
+    public Integer getYear() {
         return year;
     }
 

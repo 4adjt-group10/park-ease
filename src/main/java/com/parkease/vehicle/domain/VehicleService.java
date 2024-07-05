@@ -1,5 +1,6 @@
 package com.parkease.vehicle.domain;
 
+import com.parkease.vehicle.application.VehicleDTO;
 import com.parkease.vehicle.infrastructure.VehicleRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -23,11 +24,19 @@ public class VehicleService {
         return vehicleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Vehicle not found with id: " + id));
     }
 
+    public VehicleDTO getById(String id) {
+        return new VehicleDTO(findById(id));
+    }
+
     public List<Vehicle> findAll() {
         return vehicleRepository.findAll();
     }
 
     public void delete(String id) {
         vehicleRepository.deleteById(id);
+    }
+
+    public void delete(Vehicle vehicle) {
+        vehicleRepository.delete(vehicle);
     }
 }

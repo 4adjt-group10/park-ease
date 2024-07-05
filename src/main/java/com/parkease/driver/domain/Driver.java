@@ -1,7 +1,11 @@
 package com.parkease.driver.domain;
 
-import com.parkease.driver.application.dto.DriverFormDTO;
+import com.parkease.driver.application.DriverFormDTO;
+import com.parkease.vehicle.domain.Vehicle;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Document
 public class Driver {
@@ -12,6 +16,7 @@ public class Driver {
     private String email;
     private String phone;
     private Address address;
+    private List<Vehicle> vehicles;
 
     @Deprecated(since = "Only for frameworks use")
     public Driver() {
@@ -23,6 +28,7 @@ public class Driver {
         this.email = email;
         this.phone = phone;
         this.address = address;
+        this.vehicles = new ArrayList<>();
     }
 
     public Driver(DriverFormDTO formDTO, Address address) {
@@ -57,8 +63,15 @@ public class Driver {
         return address;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
+    public List<Vehicle> getVehicles() {
+        return vehicles;
     }
 
+    public void addVehicle(Vehicle vehicle) {
+        this.vehicles.add(vehicle);
+    }
+
+    public void removeVehicle(Vehicle vehicle) {
+        this.vehicles.removeIf(v -> v.getId().equals(vehicle.getId()));
+    }
 }
