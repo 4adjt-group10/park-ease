@@ -43,7 +43,7 @@ public class ParkingService {
         LocalDateTime endAt = LocalDateTime.now().plusHours(parkingLotFormDTO.timeParking());
         //todo validar o retorno do price
         if(priceService.findAll().stream().findFirst().isPresent()){
-         var a =    priceService.findAll().stream().findFirst().isPresent();
+         var a = priceService.findAll().stream().findFirst().isPresent();
         }
         PriceDTO priceValue = priceService.findAll().stream().findFirst().get();
         BigDecimal finalPrice = priceValue.
