@@ -23,11 +23,10 @@ public class ParkingService {
 
     public ParkingLot parkingLotIn(ParkingLotFormDTO parkingLotFormDTO) {
         if(parkingLotFormDTO.parkeTypeEnum().equals(ParkeTypeEnum.FIXEDTIME)){
-            parkingLotInFixedTime (parkingLotFormDTO);
+            return parkingLotInFixedTime (parkingLotFormDTO);
         }else {
             return parkingLotInVariableTime(parkingLotFormDTO);
         }
-        return null;
     }
 
     private ParkingLot parkingLotInVariableTime(ParkingLotFormDTO parkingLotFormDTO) {
@@ -42,9 +41,12 @@ public class ParkingService {
             var a = parkingLotFormDTO.timeParking();
         }
         LocalDateTime endAt = LocalDateTime.now().plusHours(parkingLotFormDTO.timeParking());
-        Optional<PriceDTO> priceValue = priceService.findAll().stream().findFirst();
+        //todo validar o retorno do price
+        if(priceService.findAll().stream().findFirst().isPresent()){
+         var a =    priceService.findAll().stream().findFirst().isPresent();
+        }
+        PriceDTO priceValue = priceService.findAll().stream().findFirst().get();
         BigDecimal finalPrice = priceValue.
-                get().
                 price().
                 multiply(BigDecimal.
                         valueOf(parkingLotFormDTO.
