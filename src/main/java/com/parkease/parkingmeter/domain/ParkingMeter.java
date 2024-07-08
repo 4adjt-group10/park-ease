@@ -1,24 +1,30 @@
-package com.parkease.parkease.domain;
+package com.parkease.parkingmeter.domain;
 
-import com.parkease.parkease.application.ParkeTypeEnum;
-import com.parkease.parkease.application.ParkingLotFormDTO;
+import com.parkease.parkingmeter.application.ParkingMeterType;
+import com.parkease.parkingmeter.application.ParkingLotFormDTO;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Document
-public class ParkingLot {
+public class ParkingMeter {
+
     private String id;
-    private String vehicleid;
+    private String vehicleId;
     private String driverId;
-    private ParkeTypeEnum type;
+    private ParkingMeterType type;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
     private BigDecimal price;
 
-    public ParkingLot(String vehicleid, String driverId, ParkeTypeEnum type, LocalDateTime startAt, LocalDateTime endAt, BigDecimal price) {
-        this.vehicleid = vehicleid;
+    public ParkingMeter(String vehicleId,
+                        String driverId,
+                        ParkingMeterType type,
+                        LocalDateTime startAt,
+                        LocalDateTime endAt,
+                        BigDecimal price) {
+        this.vehicleId = vehicleId;
         this.driverId = driverId;
         this.type = type;
         this.startAt = startAt;
@@ -28,10 +34,10 @@ public class ParkingLot {
 
 
 
-    public ParkingLot(ParkingLotFormDTO formDTO, LocalDateTime startAt, LocalDateTime endAt, BigDecimal price) {
+    public ParkingMeter(ParkingLotFormDTO formDTO, LocalDateTime startAt, LocalDateTime endAt, BigDecimal price) {
         this(formDTO.vehicleId(),
                 formDTO.driverId(),
-                formDTO.parkeTypeEnum(),
+                formDTO.parkingMeterType(),
                 startAt,
                 endAt,
                 price);
@@ -44,15 +50,15 @@ public class ParkingLot {
         return id;
     }
 
-    public String getVehicleid() {
-        return vehicleid;
+    public String getVehicleId() {
+        return vehicleId;
     }
 
     public String getDriverId() {
         return driverId;
     }
 
-    public ParkeTypeEnum getType() {
+    public ParkingMeterType getType() {
         return type;
     }
 
