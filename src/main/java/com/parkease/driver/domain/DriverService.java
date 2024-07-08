@@ -68,4 +68,8 @@ public class DriverService {
         vehicleService.delete(vehicle);
         driverRepository.save(driver);
     }
+
+    public boolean existsById(String id) {
+        return driverRepository.existsById(id);
+    }
 }

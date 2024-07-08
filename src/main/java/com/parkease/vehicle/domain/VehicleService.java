@@ -39,4 +39,8 @@ public class VehicleService {
     public void delete(Vehicle vehicle) {
         vehicleRepository.delete(vehicle);
     }
+
+    public boolean existsById(String id) {
+        return vehicleRepository.existsById(id);
+    }
 }
