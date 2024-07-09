@@ -11,15 +11,14 @@ public class Price {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
-    private BigDecimal price;
+    private BigDecimal value;
     private String name;
 
     public Price() {
     }
 
-
-    public Price(BigDecimal price,  String name) {
-        this.price = price;
+    public Price(BigDecimal value, String name) {
+        this.value = value;
         this.name = name;
     }
 
@@ -28,7 +27,7 @@ public class Price {
     }
 
     public void merge(PriceFormDTO formDTO){
-        this.price = formDTO.price();
+        this.value = formDTO.price();
         this.name = formDTO.name();
     }
 
@@ -36,14 +35,13 @@ public class Price {
         return id;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public BigDecimal getValue() {
+        return value;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setValue(BigDecimal price) {
+        this.value = price;
     }
-
 
     public String getName() {
         return name;

@@ -2,6 +2,7 @@ package com.parkease.parkingmeter.application;
 
 import com.parkease.parkingmeter.domain.ParkingMeter;
 import com.parkease.parkingmeter.domain.ParkingMeterService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,7 @@ public class ParkingMeterController {
     }
 
     @PostMapping("/parklot")
-    public ParkingMeter parkinglotIn (@RequestBody ParkingLotFormDTO parkingLotDTO) {
+    public ParkingMeter parkinglotIn (@RequestBody @Valid ParkingMeterFormDTO parkingLotDTO) {
         return parkingMeterService.parkingLotIn(parkingLotDTO);
     }
 }
