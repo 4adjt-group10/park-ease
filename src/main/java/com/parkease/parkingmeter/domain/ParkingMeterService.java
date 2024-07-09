@@ -4,18 +4,22 @@ import com.parkease.admin.apllication.dto.PriceDTO;
 import com.parkease.admin.domain.PriceService;
 import com.parkease.driver.domain.Driver;
 import com.parkease.driver.domain.DriverService;
+import com.parkease.invoice.domain.InvoiceService;
+import com.parkease.parkingmeter.application.ParkingMeterDTO;
 import com.parkease.parkingmeter.application.ParkingMeterFormDTO;
 import com.parkease.parkingmeter.infrastructure.ParkingMeterRepository;
+import com.parkease.payment.application.PaymentFormDTO;
 import com.parkease.payment.domain.Payment;
 import com.parkease.payment.domain.PaymentMethod;
 import com.parkease.payment.domain.PaymentService;
-import com.parkease.payment.domain.PaymentStatus;
 import com.parkease.vehicle.domain.VehicleService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import static com.parkease.payment.domain.PaymentMethod.PIX;
 import static com.parkease.payment.domain.PaymentStatus.PAID;
@@ -31,25 +35,29 @@ public class ParkingMeterService {
     private final DriverService driverService;
     private final VehicleService vehicleService;
     private final PaymentService paymentService;
+    private final InvoiceService invoiceService;
 
     public ParkingMeterService(ParkingMeterRepository parkingMeterRepository,
                                PriceService priceService,
                                DriverService driverService,
-                               VehicleService vehicleService, PaymentService paymentService) {
+                               VehicleService vehicleService,
+                               PaymentService paymentService,
+                               InvoiceService invoiceService) {
         this.parkingMeterRepository = parkingMeterRepository;
         this.priceService = priceService;
         this.driverService = driverService;
         this.vehicleService = vehicleService;
         this.paymentService = paymentService;
+        this.invoiceService = invoiceService;
     }
 
-    public ParkingMeter parkingLotIn(ParkingMeterFormDTO formDTO) {
+    public ParkingMeter arrivingParkingLot(ParkingMeterFormDTO formDTO) {
         return formDTO.isFixedTime()
-                ? parkingLotInFixedTime(formDTO)
-                : parkingLotInVariableTime(formDTO);
+                ? parkingInFixedTime(formDTO)
+                : parkingInVariableTime(formDTO);
     }
 
-    private ParkingMeter parkingLotInVariableTime(ParkingMeterFormDTO formDTO) {
+    private ParkingMeter parkingInVariableTime(ParkingMeterFormDTO formDTO) {
         if(formDTO.paymentMethod().equals(PIX)) {
             throw new IllegalArgumentException("PIX payment method is not allowed for variable time parking");
         }
@@ -58,8 +66,7 @@ public class ParkingMeterService {
 
     }
 
-    //TODO: Implementar o fluxo de cobrança para adicionar no caso de pagamento fixo
-    private ParkingMeter parkingLotInFixedTime(ParkingMeterFormDTO formDTO) {
+    private ParkingMeter parkingInFixedTime(ParkingMeterFormDTO formDTO) {
 
         if(!formDTO.hasValidTimeParking()) {
             throw new IllegalArgumentException("Invalid time parking");
@@ -77,29 +84,56 @@ public class ParkingMeterService {
         }else {
             PriceDTO priceValue = priceService.findAll().stream().findFirst().get();
             BigDecimal finalPrice = priceValue.price().multiply(valueOf(fixedTime));
-
+            Payment payment = paymentService.createNewPayment(new PaymentFormDTO(formDTO.driverId(), finalPrice, formDTO.paymentMethod(), PENDING));
+            invoiceService.createInvoice(payment, now());
             return parkingMeterRepository.save(new ParkingMeter(formDTO, now(),
                     endAt, finalPrice));
-
         }
     }
 
-    //TODO: Implementar o fluxo de cobrança para adicionar no caso de pagamento fixo com tempo extra
-    public void parkingLotOut(String parkingMeterId) {
+    public void leavingVariableTime(String parkingMeterId) {
         ParkingMeter parkingMeter = parkingMeterRepository.findById(parkingMeterId)
                 .orElseThrow(EntityNotFoundException::new);
         Driver driver = driverService.findById(parkingMeter.getDriverId());
+        PriceDTO priceValue = priceService.findAll().stream().findFirst().get();
+        BigDecimal finalPrice = priceValue.price().multiply(valueOf(parkingMeter.getTotalHours(now())));
+        Payment payment = paymentService
+                .savePayment(new Payment(driver, finalPrice, parkingMeter.getPaymentMethod(), PENDING));
+        invoiceService.createInvoice(payment, now());
+        parkingMeterRepository.delete(parkingMeter);
+        //TODO: Implementar o final do fluxo
+    }
 
-        if(parkingMeter.isFixedTime()) {
-            Payment lastPayment = paymentService.findLastPaymentByDriver(driver.getId());
+    public void leavingFixedTime(String parkingMeterId, Optional<PaymentMethod> paymentMethod) {
+        ParkingMeter parkingMeter = parkingMeterRepository.findById(parkingMeterId)
+                .orElseThrow(EntityNotFoundException::new);
+        Driver driver = driverService.findById(parkingMeter.getDriverId());
+        Payment lastPayment = paymentService.findLastPaymentByDriver(driver.getId());
 
-            if(parkingMeter.getEndAt().isBefore(now())) {
-
+        if(parkingMeter.getEndAt().isBefore(now())) {
+            if(paymentMethod.isEmpty()) {
+                throw new IllegalArgumentException("Payment method is required");
             }
+            if(paymentMethod.get().equals(PIX)) {
+                throw new IllegalArgumentException("PIX payment method is not allowed");
+            }
+            BigDecimal lastPaymentAmount = lastPayment.getAmount();
+            PriceDTO priceValue = priceService.findAll().stream().findFirst().get();
+            BigDecimal finalPrice = priceValue.price()
+                    .multiply(valueOf(parkingMeter.getTotalHours(now())))
+                    .subtract(lastPaymentAmount);
+            Payment payment = paymentService
+                    .savePayment(new Payment(driver, finalPrice, parkingMeter.getPaymentMethod(), PENDING));
+            invoiceService.createInvoice(payment, now());
         }
-
+        //TODO: Implementar o final do fluxo
         Payment payment = new Payment(driver, parkingMeter.getPrice(), parkingMeter.getPaymentMethod(), PAID);
 
         parkingMeterRepository.delete(parkingMeter);
+    }
+
+
+    public List<ParkingMeterDTO> listAllParkingMeters() {
+        return parkingMeterRepository.findAll().stream().map(ParkingMeterDTO::new).toList();
     }
 }

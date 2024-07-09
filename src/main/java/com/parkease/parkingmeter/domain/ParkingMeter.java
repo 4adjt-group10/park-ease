@@ -1,12 +1,13 @@
 package com.parkease.parkingmeter.domain;
 
-import com.parkease.parkingmeter.application.ParkingMeterType;
 import com.parkease.parkingmeter.application.ParkingMeterFormDTO;
+import com.parkease.parkingmeter.application.ParkingMeterType;
 import com.parkease.payment.domain.PaymentMethod;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Document
 public class ParkingMeter {
@@ -81,4 +82,10 @@ public class ParkingMeter {
     public boolean isFixedTime() {
         return type.equals(ParkingMeterType.FIXED_TIME);
     }
+
+    public long getTotalHours(LocalDateTime end) {
+        long differenceInMinutes = ChronoUnit.MINUTES.between(startAt, end);
+        return (long) Math.ceil(differenceInMinutes / 60.0);
+    }
+
 }
