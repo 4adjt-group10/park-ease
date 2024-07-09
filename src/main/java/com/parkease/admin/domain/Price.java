@@ -26,11 +26,11 @@ public class Price {
     }
 
     public Price(PriceFormDTO formDTO) {
-        this(formDTO.price(), formDTO.name(), formDTO.currentPrice());
+        this(formDTO.value(), formDTO.name(), formDTO.currentPrice());
     }
 
     public void merge(PriceFormDTO formDTO){
-        this.value = formDTO.price();
+        this.value = formDTO.value();
         this.name = formDTO.name();
         this.currentPrice = formDTO.currentPrice();
     }
