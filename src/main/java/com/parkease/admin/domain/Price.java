@@ -11,7 +11,7 @@ public class Price {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
-    private BigDecimal price;
+    private BigDecimal value;
     private String name;
     private boolean currentPrice = false;
 
@@ -19,18 +19,18 @@ public class Price {
     }
 
 
-    public Price(BigDecimal price, String name, boolean currentPrice) {
-        this.price = price;
+    public Price(BigDecimal value, String name, boolean currentPrice) {
+        this.value = value;
         this.name = name;
         this.currentPrice = currentPrice;
     }
 
     public Price(PriceFormDTO formDTO) {
-        this(formDTO.price(), formDTO.name(), formDTO.currentPrice());
+        this(formDTO.value(), formDTO.name(), formDTO.currentPrice());
     }
 
-    public void merge(PriceFormDTO formDTO) {
-        this.price = formDTO.price();
+    public void merge(PriceFormDTO formDTO){
+        this.value = formDTO.value();
         this.name = formDTO.name();
         this.currentPrice = formDTO.currentPrice();
     }
@@ -47,14 +47,13 @@ public class Price {
         return id;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public BigDecimal getValue() {
+        return value;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setValue(BigDecimal price) {
+        this.value = price;
     }
-
 
     public String getName() {
         return name;

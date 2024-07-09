@@ -56,4 +56,8 @@ public class Payment {
     public LocalDateTime getCreationDate() {
         return creationDate;
     }
+
+    public void wasPaid() {
+        this.status = PaymentStatus.PAID;
+    }
 }
