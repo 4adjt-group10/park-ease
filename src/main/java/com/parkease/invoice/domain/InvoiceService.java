@@ -29,15 +29,8 @@ public class InvoiceService {
     }
 
     @Async
-    public InvoiceDTO createInvoice(Payment payment, LocalDateTime creationDate) {
+    public void createInvoice(Payment payment, LocalDateTime creationDate) {
         Invoice invoice = invoiceRepository.save(new Invoice(payment, creationDate));
-        processInvoice(invoice);
-        return new InvoiceDTO(invoice);
-    }
-
-    @Async
-    public void processInvoice(Invoice invoice) {
-
         ResponseEntity<Invoice> response = restTemplate
                 .postForEntity("https://run.mocky.io/v3/025c106e-d4ee-457d-9168-2b1df7a2dc40?mocky-delay=1s", invoice, Invoice.class);
         if (!response.getStatusCode().is2xxSuccessful()) {

@@ -47,6 +47,10 @@ public class ParkingMeter {
                 formDTO.paymentMethod());
     }
 
+    @Deprecated(since = "For frameworks only")
+    public ParkingMeter() {
+    }
+
     public String getId() {
         return id;
     }
