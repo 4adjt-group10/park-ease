@@ -13,22 +13,34 @@ public class Price {
     private Long id;
     private BigDecimal value;
     private String name;
+    private boolean currentPrice = false;
 
     public Price() {
     }
 
-    public Price(BigDecimal value, String name) {
+
+    public Price(BigDecimal value, String name, boolean currentPrice) {
         this.value = value;
         this.name = name;
+        this.currentPrice = currentPrice;
     }
 
     public Price(PriceFormDTO formDTO) {
-        this(formDTO.price(), formDTO.name());
+        this(formDTO.price(), formDTO.name(), formDTO.currentPrice());
     }
 
     public void merge(PriceFormDTO formDTO){
         this.value = formDTO.price();
         this.name = formDTO.name();
+        this.currentPrice = formDTO.currentPrice();
+    }
+
+    public boolean isCurrentPrice() {
+        return currentPrice;
+    }
+
+    public void setCurrentPrice(boolean currentPrice) {
+        this.currentPrice = currentPrice;
     }
 
     public Long getId() {
@@ -50,4 +62,5 @@ public class Price {
     public void setName(String name) {
         this.name = name;
     }
+
 }

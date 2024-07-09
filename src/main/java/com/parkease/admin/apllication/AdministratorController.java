@@ -42,6 +42,7 @@ public class AdministratorController {
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         priceService.deletePrice(id);
         return ResponseEntity.noContent().build();
+
     }
 
 }
