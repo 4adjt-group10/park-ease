@@ -7,6 +7,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PriceService {
@@ -25,22 +26,40 @@ public class PriceService {
         return priceRepository.findById(id).map(PriceDTO::new).orElseThrow(EntityNotFoundException::new);
     }
 
-    public PriceDTO createNewPrice(PriceFormDTO formDTO) {
+    public PriceDTO createNewPrice(PriceFormDTO formDTO) throws IllegalStateException {
+        if(formDTO.currentPrice()){
+            Optional<Price> currentPrice = priceRepository.findByCurrentPriceTrue();
+            if(currentPrice.isPresent()){
+                throw new IllegalStateException("Current price already exists");
+            }
+        }
         Price price = priceRepository.save(new Price(formDTO));
         return new PriceDTO(price);
     }
 
     public PriceDTO updatePriceById(Long id, PriceFormDTO formDTO) {
         Price price = priceRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+        if(formDTO.currentPrice()){
+            Optional<Price> currentPrice = priceRepository.findByCurrentPriceTrue();
+            if(currentPrice.isPresent() && !currentPrice.get().getId().equals(id)){
+                currentPrice.get().setCurrentPrice(false);
+                priceRepository.save(currentPrice.get());
+            }
+        }
         price.merge(formDTO);
         priceRepository.save(price);
         return new PriceDTO(price);
     }
 
     public void deletePrice(Long id) {
-        if (!priceRepository.existsById(id)) {
-            throw new EntityNotFoundException("Price with id " + id + " not found.");
+        Price price = priceRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Price with id " + id + " not found."));
+
+        if (price.isCurrentPrice()) {
+            throw new IllegalArgumentException("Cannot delete the current price.");
         }
+
         priceRepository.deleteById(id);
     }
 }
