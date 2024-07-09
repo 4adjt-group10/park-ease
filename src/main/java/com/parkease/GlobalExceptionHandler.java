@@ -9,6 +9,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.time.Instant;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ControllerAdvice
@@ -23,6 +24,30 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 request.getRequestURI()
         );
         return ResponseEntity.status(NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<StandardError> handleIllegalState(IllegalStateException ex, HttpServletRequest request) {
+        StandardError error = new StandardError(Instant.now(),
+                BAD_REQUEST.value(),
+                "Illegal state",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(BAD_REQUEST).body(error);
+    }
+
+
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<StandardError> handleIllegalState(IllegalArgumentException ex, HttpServletRequest request) {
+        StandardError error = new StandardError(Instant.now(),
+                BAD_REQUEST.value(),
+                "Illegal Argument",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(BAD_REQUEST).body(error);
     }
 
 }
