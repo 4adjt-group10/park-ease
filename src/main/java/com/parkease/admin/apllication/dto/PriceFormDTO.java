@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public record PriceFormDTO( BigDecimal price,  String name) {
     public PriceFormDTO(Price price){
-        this(   price.getPrice(),
+        this(   price.getValue(),
                 price.getName());
     }
 }
