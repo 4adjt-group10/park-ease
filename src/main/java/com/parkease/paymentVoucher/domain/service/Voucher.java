@@ -43,7 +43,7 @@ public class Voucher {
                 new BigDecimal(0),
                 parkingMeter.getStartAt(),
                 parkingMeter.getEndAt(),
-                parkingMeter.getTotalHours(parkingMeter.getEndAt()),
+                parkingMeter.getTotalHours(parkingMeter.getStartAt(),parkingMeter.getEndAt()),
                 parkingMeter.getPrice(),
                 new BigDecimal(0),
                 parkingMeter.getDriverId(),
@@ -56,9 +56,14 @@ public class Voucher {
                 payment.get(payment.size() - 1).getAmount(),
                 parkingMeter.getStartAt(),
                 parkingMeter.getEndAt(),
-                parkingMeter.getTotalHours(parkingMeter.getEndAt()),
+                parkingMeter.getTotalHours(parkingMeter.getStartAt(),parkingMeter.getEndAt()),
                 parkingMeter.getPrice(),
-                payment.get(payment.size() - 1).getAmount().subtract(payment.stream().findFirst().get().getAmount()).divide(),
+                payment.get(payment.size() - 1).
+                        getAmount().
+                        divide(BigDecimal.
+                                valueOf(parkingMeter.
+                                        getTotalHours(parkingMeter.
+                                                getEndAt(),LocalDateTime.now()))),
                 parkingMeter.getDriverId(),
                 parkingMeter.getVehicleId());
     }

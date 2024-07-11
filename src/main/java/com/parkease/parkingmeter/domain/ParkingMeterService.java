@@ -94,7 +94,7 @@ public class ParkingMeterService {
                 .orElseThrow(EntityNotFoundException::new);
         Driver driver = driverService.findById(parkingMeter.getDriverId());
         PriceDTO priceValue = priceService.findAll().stream().findFirst().get();
-        BigDecimal finalPrice = priceValue.price().multiply(valueOf(parkingMeter.getTotalHours(now())));
+        BigDecimal finalPrice = priceValue.price().multiply(valueOf(parkingMeter.getTotalHours(parkingMeter.getStartAt(),now())));
         Payment payment = paymentService
                 .savePayment(new Payment(driver, finalPrice, parkingMeter.getPaymentMethod(), PENDING));
         invoiceService.createInvoice(payment, now());
@@ -116,23 +116,19 @@ public class ParkingMeterService {
         Payment lastPayment = paymentService.findLastPaymentByDriver(driver.getId());
 
         if(parkingMeter.getEndAt().isBefore(now())) {
-            if(paymentMethod.isEmpty()) {
+            if (paymentMethod.isEmpty()) {
                 throw new IllegalArgumentException("Payment method is required");
             }
-            if(paymentMethod.get().equals(PIX)) {
+            if (paymentMethod.get().equals(PIX)) {
                 throw new IllegalArgumentException("PIX payment method is not allowed");
             }
-            BigDecimal lastPaymentAmount = lastPayment.getAmount();
             PriceDTO priceValue = priceService.findAll().stream().findFirst().get();
             BigDecimal finalPrice = priceValue.price()
-                    .multiply(valueOf(parkingMeter.getTotalHours(now())))
-                    .subtract(lastPaymentAmount);
+                    .multiply(valueOf(parkingMeter.getTotalHours(parkingMeter.getEndAt(), now())));
             Payment payment = paymentService
                     .savePayment(new Payment(driver, finalPrice, parkingMeter.getPaymentMethod(), PENDING));
             invoiceService.createInvoice(payment, now());
         }
-        //TODO: Implementar o final do fluxo
-        Payment payment = new Payment(driver, parkingMeter.getPrice(), parkingMeter.getPaymentMethod(), PAID);
         List<Payment> payments = paymentService.findAllByDriver(parkingMeter.getDriverId());
         paymentVoucherService.createdVoucherFixedTime(payments, parkingMeter);
         deleteAll(parkingMeter);
