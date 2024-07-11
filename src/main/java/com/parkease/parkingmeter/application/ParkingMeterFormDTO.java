@@ -13,7 +13,7 @@ public record ParkingMeterFormDTO(@NotBlank String driverId,
                                   @NotNull PaymentMethod paymentMethod
 ) {
 
-    public boolean isFixedTime() {
+    public boolean hasFixedTime() {
         return parkingMeterType.equals(ParkingMeterType.FIXED_TIME);
     }
 

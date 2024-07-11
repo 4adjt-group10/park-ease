@@ -1,5 +1,5 @@
 - Para utilizar o mongo express:
-    - Acesse o endereço: http://0.0.0.0:8081/db/parkesase/
+    - Acesse o endereço: http://0.0.0.0:8081/db/parkesase/ ou http://localhost:8081/db/parkesase/
     - Utilize o usuário: admin
     - Utilize a senha: pass
 

@@ -12,6 +12,7 @@ import com.parkease.payment.application.PaymentFormDTO;
 import com.parkease.payment.domain.Payment;
 import com.parkease.payment.domain.PaymentMethod;
 import com.parkease.payment.domain.PaymentService;
+import com.parkease.paymentVoucher.domain.service.PaymentVoucherService;
 import com.parkease.vehicle.domain.VehicleService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -36,23 +37,20 @@ public class ParkingMeterService {
     private final VehicleService vehicleService;
     private final PaymentService paymentService;
     private final InvoiceService invoiceService;
+    private final PaymentVoucherService paymentVoucherService;
 
-    public ParkingMeterService(ParkingMeterRepository parkingMeterRepository,
-                               PriceService priceService,
-                               DriverService driverService,
-                               VehicleService vehicleService,
-                               PaymentService paymentService,
-                               InvoiceService invoiceService) {
+    public ParkingMeterService(ParkingMeterRepository parkingMeterRepository, PriceService priceService, DriverService driverService, VehicleService vehicleService, PaymentService paymentService, InvoiceService invoiceService, PaymentVoucherService paymentVoucherService) {
         this.parkingMeterRepository = parkingMeterRepository;
         this.priceService = priceService;
         this.driverService = driverService;
         this.vehicleService = vehicleService;
         this.paymentService = paymentService;
         this.invoiceService = invoiceService;
+        this.paymentVoucherService = paymentVoucherService;
     }
 
     public ParkingMeter arrivingParkingLot(ParkingMeterFormDTO formDTO) {
-        return formDTO.isFixedTime()
+        return formDTO.hasFixedTime()
                 ? parkingInFixedTime(formDTO)
                 : parkingInVariableTime(formDTO);
     }
@@ -100,8 +98,15 @@ public class ParkingMeterService {
         Payment payment = paymentService
                 .savePayment(new Payment(driver, finalPrice, parkingMeter.getPaymentMethod(), PENDING));
         invoiceService.createInvoice(payment, now());
+        paymentVoucherService.createdVoucherVariable(payment, parkingMeter);
+        deleteAll(parkingMeter);
+
+    }
+
+    private void deleteAll(ParkingMeter parkingMeter) {
         parkingMeterRepository.delete(parkingMeter);
-        //TODO: Implementar o final do fluxo
+        invoiceService.deleteAll(parkingMeter);
+
     }
 
     public void leavingFixedTime(String parkingMeterId, Optional<PaymentMethod> paymentMethod) {
@@ -128,8 +133,9 @@ public class ParkingMeterService {
         }
         //TODO: Implementar o final do fluxo
         Payment payment = new Payment(driver, parkingMeter.getPrice(), parkingMeter.getPaymentMethod(), PAID);
-
-        parkingMeterRepository.delete(parkingMeter);
+        List<Payment> payments = paymentService.findAllByDriver(parkingMeter.getDriverId());
+        paymentVoucherService.createdVoucherFixedTime(payments, parkingMeter);
+        deleteAll(parkingMeter);
     }
 
 

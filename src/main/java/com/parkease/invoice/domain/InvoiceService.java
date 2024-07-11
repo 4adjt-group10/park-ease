@@ -3,6 +3,7 @@ package com.parkease.invoice.domain;
 import com.parkease.InvoiceProcessingException;
 import com.parkease.invoice.application.InvoiceDTO;
 import com.parkease.invoice.infrastructure.InvoiceRepository;
+import com.parkease.parkingmeter.domain.ParkingMeter;
 import com.parkease.payment.domain.Payment;
 import com.parkease.payment.domain.PaymentService;
 import org.springframework.http.ResponseEntity;
@@ -56,4 +57,13 @@ public class InvoiceService {
     }
 
 
+    public void delete(Payment payment) {
+        invoiceRepository.deleteAllByPayment(payment);
+    }
+
+    public void deleteAll(ParkingMeter parkingMeter) {
+        List<Payment> payments = paymentService.findAllByDriver(parkingMeter.getDriverId());
+        paymentService.deleteAll(parkingMeter.getDriverId());
+        payments.forEach(invoiceRepository::deleteAllByPayment);
+    }
 }
