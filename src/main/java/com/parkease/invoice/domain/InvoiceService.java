@@ -63,7 +63,7 @@ public class InvoiceService {
 
     public void deleteAll(ParkingMeter parkingMeter) {
         List<Payment> payments = paymentService.findAllByDriver(parkingMeter.getDriverId());
-        paymentService.deleteAll(parkingMeter.getDriverId());
         payments.forEach(invoiceRepository::deleteAllByPayment);
+        paymentService.deleteAll(parkingMeter.getDriverId());
     }
 }

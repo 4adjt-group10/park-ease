@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.parkease.payment.domain.PaymentMethod.PIX;
-import static com.parkease.payment.domain.PaymentStatus.PAID;
 import static com.parkease.payment.domain.PaymentStatus.PENDING;
 import static java.math.BigDecimal.valueOf;
 import static java.time.LocalDateTime.now;
@@ -59,8 +58,9 @@ public class ParkingMeterService {
         if(formDTO.paymentMethod().equals(PIX)) {
             throw new IllegalArgumentException("PIX payment method is not allowed for variable time parking");
         }
+        BigDecimal price = priceService.findCurrentPrice().value();
         return parkingMeterRepository.save(new ParkingMeter(formDTO, now(),
-                null, new BigDecimal(0)));
+                null, price));
 
     }
 
@@ -80,8 +80,8 @@ public class ParkingMeterService {
         if(priceService.findAll().stream().findFirst().isEmpty()){
             throw new EntityNotFoundException("The price doesn't exist.");
         }else {
-            PriceDTO priceValue = priceService.findAll().stream().findFirst().get();
-            BigDecimal finalPrice = priceValue.price().multiply(valueOf(fixedTime));
+            PriceDTO priceValue = priceService.findCurrentPrice();
+            BigDecimal finalPrice = priceValue.value().multiply(valueOf(fixedTime));
             Payment payment = paymentService.createNewPayment(new PaymentFormDTO(formDTO.driverId(), finalPrice, formDTO.paymentMethod(), PENDING));
             invoiceService.createInvoice(payment, now());
             return parkingMeterRepository.save(new ParkingMeter(formDTO, now(),
@@ -93,8 +93,8 @@ public class ParkingMeterService {
         ParkingMeter parkingMeter = parkingMeterRepository.findById(parkingMeterId)
                 .orElseThrow(EntityNotFoundException::new);
         Driver driver = driverService.findById(parkingMeter.getDriverId());
-        PriceDTO priceValue = priceService.findAll().stream().findFirst().get();
-        BigDecimal finalPrice = priceValue.price().multiply(valueOf(parkingMeter.getTotalHours(parkingMeter.getStartAt(),now())));
+        BigDecimal priceValue = parkingMeter.getPrice();
+        BigDecimal finalPrice = priceValue.multiply(valueOf(parkingMeter.getTotalHours(parkingMeter.getStartAt(),now())));
         Payment payment = paymentService
                 .savePayment(new Payment(driver, finalPrice, parkingMeter.getPaymentMethod(), PENDING));
         invoiceService.createInvoice(payment, now());
@@ -113,8 +113,6 @@ public class ParkingMeterService {
         ParkingMeter parkingMeter = parkingMeterRepository.findById(parkingMeterId)
                 .orElseThrow(EntityNotFoundException::new);
         Driver driver = driverService.findById(parkingMeter.getDriverId());
-        Payment lastPayment = paymentService.findLastPaymentByDriver(driver.getId());
-
         if(parkingMeter.getEndAt().isBefore(now())) {
             if (paymentMethod.isEmpty()) {
                 throw new IllegalArgumentException("Payment method is required");
@@ -122,15 +120,20 @@ public class ParkingMeterService {
             if (paymentMethod.get().equals(PIX)) {
                 throw new IllegalArgumentException("PIX payment method is not allowed");
             }
-            PriceDTO priceValue = priceService.findAll().stream().findFirst().get();
-            BigDecimal finalPrice = priceValue.price()
+            PriceDTO priceValue  = priceService.findCurrentPrice();
+            BigDecimal finalPrice = priceValue.value()
                     .multiply(valueOf(parkingMeter.getTotalHours(parkingMeter.getEndAt(), now())));
             Payment payment = paymentService
                     .savePayment(new Payment(driver, finalPrice, parkingMeter.getPaymentMethod(), PENDING));
             invoiceService.createInvoice(payment, now());
         }
         List<Payment> payments = paymentService.findAllByDriver(parkingMeter.getDriverId());
-        paymentVoucherService.createdVoucherFixedTime(payments, parkingMeter);
+        if(payments.size() > 1){
+            paymentVoucherService.createdVoucherFixedTime(payments, parkingMeter);
+        }else{
+            var payment = payments.stream().findFirst().get();
+            paymentVoucherService.createdVoucherVariable(payment,parkingMeter);
+        }
         deleteAll(parkingMeter);
     }
 
@@ -139,3 +142,4 @@ public class ParkingMeterService {
         return parkingMeterRepository.findAll().stream().map(ParkingMeterDTO::new).toList();
     }
 }
+

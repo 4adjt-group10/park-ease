@@ -26,14 +26,13 @@ public class Voucher {
     public Voucher() {
     }
 
-    public Voucher(BigDecimal value, BigDecimal extraValue, LocalDateTime arrivedAt, LocalDateTime leftAt, Long time, BigDecimal currentPrice, BigDecimal extraCurrentPrice, String driverId, String vehicleId) {
+    public Voucher(BigDecimal value, BigDecimal extraValue, LocalDateTime arrivedAt, LocalDateTime leftAt, Long time, BigDecimal currentPrice, String driverId, String vehicleId) {
         this.value = value;
         this.extraValue = extraValue;
         this.arrivedAt = arrivedAt;
         this.leftAt = leftAt;
         this.time = time;
         this.currentPrice = currentPrice;
-        this.extraCurrentPrice = extraCurrentPrice;
         this.driverId = driverId;
         this.vehicleId = vehicleId;
     }
@@ -45,7 +44,6 @@ public class Voucher {
                 parkingMeter.getEndAt(),
                 parkingMeter.getTotalHours(parkingMeter.getStartAt(),parkingMeter.getEndAt()),
                 parkingMeter.getPrice(),
-                new BigDecimal(0),
                 parkingMeter.getDriverId(),
                 parkingMeter.getVehicleId());
     }
@@ -58,12 +56,6 @@ public class Voucher {
                 parkingMeter.getEndAt(),
                 parkingMeter.getTotalHours(parkingMeter.getStartAt(),parkingMeter.getEndAt()),
                 parkingMeter.getPrice(),
-                payment.get(payment.size() - 1).
-                        getAmount().
-                        divide(BigDecimal.
-                                valueOf(parkingMeter.
-                                        getTotalHours(parkingMeter.
-                                                getEndAt(),LocalDateTime.now()))),
                 parkingMeter.getDriverId(),
                 parkingMeter.getVehicleId());
     }

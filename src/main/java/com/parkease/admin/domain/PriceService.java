@@ -62,4 +62,9 @@ public class PriceService {
 
         priceRepository.deleteById(id);
     }
+
+    public PriceDTO findCurrentPrice(){
+        return priceRepository.findByCurrentPriceTrue().map(PriceDTO::new).orElseThrow(() ->
+                new EntityNotFoundException("Not found any current price"));
+    }
 }
