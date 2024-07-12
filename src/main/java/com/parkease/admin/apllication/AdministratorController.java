@@ -1,22 +1,22 @@
 package com.parkease.admin.apllication;
 
-import com.parkease.admin.apllication.dto.PriceDTO;
-import com.parkease.admin.apllication.dto.PriceFormDTO;
 import com.parkease.admin.domain.PriceService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/admin/price")
 public class AdministratorController {
-    @Autowired
-    PriceService priceService;
+
+    private final PriceService priceService;
+
+    public AdministratorController(PriceService priceService) {
+        this.priceService = priceService;
+    }
 
     @GetMapping("/listall")
     public ResponseEntity<List<PriceDTO>> findAllValues() {

@@ -1,6 +1,6 @@
 package com.parkease.admin.domain;
 
-import com.parkease.admin.apllication.dto.PriceFormDTO;
+import com.parkease.admin.apllication.PriceFormDTO;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;

@@ -1,7 +1,7 @@
 package com.parkease.admin.domain;
 
-import com.parkease.admin.apllication.dto.PriceDTO;
-import com.parkease.admin.apllication.dto.PriceFormDTO;
+import com.parkease.admin.apllication.PriceDTO;
+import com.parkease.admin.apllication.PriceFormDTO;
 import com.parkease.admin.infrastructure.PriceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -61,5 +61,10 @@ public class PriceService {
         }
 
         priceRepository.deleteById(id);
+    }
+
+    public PriceDTO findCurrentPrice(){
+        return priceRepository.findByCurrentPriceTrue().map(PriceDTO::new).orElseThrow(() ->
+                new EntityNotFoundException("Not found any current price"));
     }
 }

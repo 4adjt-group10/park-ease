@@ -60,4 +60,15 @@ public class PaymentService {
         paymentRepository.save(payment);
     }
 
+    public void delete(Payment payment) {
+        paymentRepository.delete(payment);
+    }
+
+    public List<Payment> findAllByDriver(String driverId) {
+        return paymentRepository.findAllByDriverId(driverId);
+    }
+
+    public void deleteAll(String driverId) {
+        paymentRepository.deleteAllByDriverId(driverId);
+    }
 }

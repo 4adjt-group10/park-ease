@@ -1,4 +1,4 @@
-package com.parkease.admin.apllication.dto;
+package com.parkease.admin.apllication;
 
 import com.parkease.admin.domain.Price;
 
