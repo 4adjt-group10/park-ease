@@ -61,9 +61,13 @@ public class InvoiceService {
         invoiceRepository.deleteAllByPayment(payment);
     }
 
-    public void deleteAll(ParkingMeter parkingMeter) {
+    public void deleteAllInvoicesAndPayments(ParkingMeter parkingMeter) {
         List<Payment> payments = paymentService.findAllByDriver(parkingMeter.getDriverId());
         payments.forEach(invoiceRepository::deleteAllByPayment);
         paymentService.deleteAll(parkingMeter.getDriverId());
+    }
+
+    public List<Invoice> findAllByDriverId(String driverId) {
+        return invoiceRepository.findAllByPayment_Driver_Id(driverId);
     }
 }

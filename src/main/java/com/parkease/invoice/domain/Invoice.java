@@ -16,7 +16,6 @@ public class Invoice {
     public Invoice(Payment payment, LocalDateTime creationDate) {
         this.payment = payment;
         this.creationDate = creationDate;
-        this.processingDate = processingDate;
     }
 
     public String getId() {

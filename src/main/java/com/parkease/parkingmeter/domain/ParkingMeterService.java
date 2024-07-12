@@ -1,6 +1,6 @@
 package com.parkease.parkingmeter.domain;
 
-import com.parkease.admin.apllication.dto.PriceDTO;
+import com.parkease.admin.apllication.PriceDTO;
 import com.parkease.admin.domain.PriceService;
 import com.parkease.driver.domain.Driver;
 import com.parkease.driver.domain.DriverService;
@@ -12,7 +12,10 @@ import com.parkease.payment.application.PaymentFormDTO;
 import com.parkease.payment.domain.Payment;
 import com.parkease.payment.domain.PaymentMethod;
 import com.parkease.payment.domain.PaymentService;
-import com.parkease.paymentVoucher.domain.service.PaymentVoucherService;
+import com.parkease.paymentVoucher.application.VoucherDTO;
+import com.parkease.paymentVoucher.domain.PaymentVoucherService;
+import com.parkease.paymentVoucher.domain.Voucher;
+import com.parkease.vehicle.domain.Vehicle;
 import com.parkease.vehicle.domain.VehicleService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -89,30 +92,27 @@ public class ParkingMeterService {
         }
     }
 
-    public void leavingVariableTime(String parkingMeterId) {
+    public VoucherDTO leavingVariableTime(String parkingMeterId) {
         ParkingMeter parkingMeter = parkingMeterRepository.findById(parkingMeterId)
                 .orElseThrow(EntityNotFoundException::new);
         Driver driver = driverService.findById(parkingMeter.getDriverId());
+        Vehicle vehicle = vehicleService.findById(parkingMeter.getVehicleId());
         BigDecimal priceValue = parkingMeter.getPrice();
         BigDecimal finalPrice = priceValue.multiply(valueOf(parkingMeter.getTotalHours(parkingMeter.getStartAt(),now())));
         Payment payment = paymentService
                 .savePayment(new Payment(driver, finalPrice, parkingMeter.getPaymentMethod(), PENDING));
         invoiceService.createInvoice(payment, now());
-        paymentVoucherService.createdVoucherVariable(payment, parkingMeter);
+        Voucher voucher = paymentVoucherService.createdVoucherVariable(payment, parkingMeter);
         deleteAll(parkingMeter);
-
+        return new VoucherDTO(voucher, driver.getFullName(), vehicle.getLicensePlate());
     }
 
-    private void deleteAll(ParkingMeter parkingMeter) {
-        parkingMeterRepository.delete(parkingMeter);
-        invoiceService.deleteAll(parkingMeter);
-
-    }
-
-    public void leavingFixedTime(String parkingMeterId, Optional<PaymentMethod> paymentMethod) {
+    public VoucherDTO leavingFixedTime(String parkingMeterId, Optional<PaymentMethod> paymentMethod) {
         ParkingMeter parkingMeter = parkingMeterRepository.findById(parkingMeterId)
                 .orElseThrow(EntityNotFoundException::new);
         Driver driver = driverService.findById(parkingMeter.getDriverId());
+        Vehicle vehicle = vehicleService.findById(parkingMeter.getVehicleId());
+        LocalDateTime extraLeft;
         if(parkingMeter.getEndAt().isBefore(now())) {
             if (paymentMethod.isEmpty()) {
                 throw new IllegalArgumentException("Payment method is required");
@@ -125,18 +125,26 @@ public class ParkingMeterService {
                     .multiply(valueOf(parkingMeter.getTotalHours(parkingMeter.getEndAt(), now())));
             Payment payment = paymentService
                     .savePayment(new Payment(driver, finalPrice, parkingMeter.getPaymentMethod(), PENDING));
-            invoiceService.createInvoice(payment, now());
-        }
-        List<Payment> payments = paymentService.findAllByDriver(parkingMeter.getDriverId());
-        if(payments.size() > 1){
-            paymentVoucherService.createdVoucherFixedTime(payments, parkingMeter);
+            extraLeft = now();
+            invoiceService.createInvoice(payment, extraLeft);
+            List<Payment> payments = paymentService.findAllByDriver(parkingMeter.getDriverId());
+            BigDecimal extraCurrentPrice = payments.get(payments.size() - 1).getAmount()
+                    .divide(valueOf(parkingMeter.getTotalHours(parkingMeter.getEndAt(), extraLeft)));
+            Voucher voucher = paymentVoucherService.createdVoucherFixedTime(payments, parkingMeter, extraCurrentPrice);
+            deleteAll(parkingMeter);
+            return new VoucherDTO(voucher, driver.getFullName(), vehicle.getLicensePlate());
         }else{
-            var payment = payments.stream().findFirst().get();
-            paymentVoucherService.createdVoucherVariable(payment,parkingMeter);
+            var payment = paymentService.findLastPaymentByDriver(parkingMeter.getDriverId());
+            Voucher voucher = paymentVoucherService.createdVoucherVariable(payment, parkingMeter);
+            deleteAll(parkingMeter);
+            return new VoucherDTO(voucher, driver.getFullName(), vehicle.getLicensePlate());
         }
-        deleteAll(parkingMeter);
     }
 
+    private void deleteAll(ParkingMeter parkingMeter) {
+        parkingMeterRepository.delete(parkingMeter);
+        invoiceService.deleteAllInvoicesAndPayments(parkingMeter);
+    }
 
     public List<ParkingMeterDTO> listAllParkingMeters() {
         return parkingMeterRepository.findAll().stream().map(ParkingMeterDTO::new).toList();

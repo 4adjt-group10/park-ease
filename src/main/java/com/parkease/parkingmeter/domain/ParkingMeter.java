@@ -87,7 +87,7 @@ public class ParkingMeter {
         return type.equals(ParkingMeterType.FIXED_TIME);
     }
 
-    public long getTotalHours(LocalDateTime start,LocalDateTime end) {
+    public long getTotalHours(LocalDateTime start, LocalDateTime end) {
         long differenceInMinutes = ChronoUnit.MINUTES.between(start, end);
         return (long) Math.ceil(differenceInMinutes / 60.0);
     }

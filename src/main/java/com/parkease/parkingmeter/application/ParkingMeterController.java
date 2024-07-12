@@ -3,13 +3,13 @@ package com.parkease.parkingmeter.application;
 import com.parkease.parkingmeter.domain.ParkingMeter;
 import com.parkease.parkingmeter.domain.ParkingMeterService;
 import com.parkease.payment.domain.PaymentMethod;
+import com.parkease.paymentVoucher.application.VoucherDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
-
-import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/parking-meter")
@@ -27,19 +27,17 @@ public class ParkingMeterController {
     }
 
     @PostMapping("/leaving/{id}/variable-time")
-    public ResponseEntity leavingVariableTime(@PathVariable String id) {
-        parkingMeterService.leavingVariableTime(id);
-        return ResponseEntity.status(OK).build();
+    public ResponseEntity<VoucherDTO> leavingVariableTime(@PathVariable String id) {
+        return ResponseEntity.ok(parkingMeterService.leavingVariableTime(id));
     }
 
     @PostMapping("/leaving/{id}/fixed-time")
-    public ResponseEntity leaving (@PathVariable String id, @RequestBody Optional<PaymentMethod> paymentMethod) {
-        parkingMeterService.leavingFixedTime(id, paymentMethod);
-        return ResponseEntity.status(OK).build();
+    public ResponseEntity<VoucherDTO> leaving (@PathVariable String id, @RequestBody Optional<PaymentMethod> paymentMethod) {
+        return ResponseEntity.ok(parkingMeterService.leavingFixedTime(id, paymentMethod));
     }
 
     @GetMapping("/list-all")
-    public ResponseEntity listAllParkingMeters() {
+    public ResponseEntity<List<ParkingMeterDTO>> listAllParkingMeters() {
         return ResponseEntity.ok(parkingMeterService.listAllParkingMeters());
     }
 }

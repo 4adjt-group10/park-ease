@@ -1,6 +1,6 @@
-package com.parkease.paymentVoucher.infrastructure.repository;
+package com.parkease.paymentVoucher.infrastructure;
 
-import com.parkease.paymentVoucher.domain.service.Voucher;
+import com.parkease.paymentVoucher.domain.Voucher;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
