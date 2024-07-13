@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.math.BigDecimal.ZERO;
+import static java.time.LocalDateTime.*;
 
 @Entity
 public class Voucher {
@@ -38,6 +39,7 @@ public class Voucher {
                    BigDecimal extraCurrentPrice,
                    String driverId,
                    String vehicleId) {
+        this.id = UUID.randomUUID();
         this.value = value;
         this.extraValue = extraValue;
         this.arrivedAt = arrivedAt;
@@ -53,8 +55,8 @@ public class Voucher {
         this(payment.getAmount(),
                 ZERO,
                 parkingMeter.getStartAt(),
-                parkingMeter.getEndAt(),
-                parkingMeter.getTotalHours(parkingMeter.getStartAt(),parkingMeter.getEndAt()),
+                now(),
+                parkingMeter.getTotalHours(parkingMeter.getStartAt(), now()),
                 parkingMeter.getPrice(),
                 ZERO,
                 parkingMeter.getDriverId(),

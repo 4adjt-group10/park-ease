@@ -87,8 +87,7 @@ public class ParkingMeterService {
             BigDecimal finalPrice = priceValue.value().multiply(valueOf(fixedTime));
             Payment payment = paymentService.createNewPayment(new PaymentFormDTO(formDTO.driverId(), finalPrice, formDTO.paymentMethod(), PENDING));
             invoiceService.createInvoice(payment, now());
-            return parkingMeterRepository.save(new ParkingMeter(formDTO, now(),
-                    endAt, finalPrice));
+            return parkingMeterRepository.save(new ParkingMeter(formDTO, now(), endAt, priceValue.value()));
         }
     }
 
@@ -98,7 +97,7 @@ public class ParkingMeterService {
         Driver driver = driverService.findById(parkingMeter.getDriverId());
         Vehicle vehicle = vehicleService.findById(parkingMeter.getVehicleId());
         BigDecimal priceValue = parkingMeter.getPrice();
-        BigDecimal finalPrice = priceValue.multiply(valueOf(parkingMeter.getTotalHours(parkingMeter.getStartAt(),now())));
+        BigDecimal finalPrice = priceValue.multiply(valueOf(parkingMeter.getTotalHours(parkingMeter.getStartAt(), now())));
         Payment payment = paymentService
                 .savePayment(new Payment(driver, finalPrice, parkingMeter.getPaymentMethod(), PENDING));
         invoiceService.createInvoice(payment, now());
@@ -124,7 +123,7 @@ public class ParkingMeterService {
             BigDecimal finalPrice = priceValue.value()
                     .multiply(valueOf(parkingMeter.getTotalHours(parkingMeter.getEndAt(), now())));
             Payment payment = paymentService
-                    .savePayment(new Payment(driver, finalPrice, parkingMeter.getPaymentMethod(), PENDING));
+                    .savePayment(new Payment(driver, finalPrice, paymentMethod.get(), PENDING));
             extraLeft = now();
             invoiceService.createInvoice(payment, extraLeft);
             List<Payment> payments = paymentService.findAllByDriver(parkingMeter.getDriverId());

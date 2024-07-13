@@ -9,6 +9,7 @@ import com.parkease.payment.domain.PaymentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,7 @@ public class InvoiceService {
     }
 
     @Async
+    @Transactional
     public void createInvoice(Payment payment, LocalDateTime creationDate) {
         Invoice invoice = invoiceRepository.save(new Invoice(payment, creationDate));
         ResponseEntity<Invoice> response = restTemplate

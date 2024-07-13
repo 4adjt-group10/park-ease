@@ -19,7 +19,6 @@ public class PaymentVoucherService {
 
     public Voucher createdVoucherVariable(Payment payment, ParkingMeter parkingMeter) {
        return paymentVoucherRepository.save(new Voucher(payment, parkingMeter));
-
     }
 
     public Voucher createdVoucherFixedTime(List<Payment> payments, ParkingMeter parkingMeter, BigDecimal extraCurrentPrice) {
