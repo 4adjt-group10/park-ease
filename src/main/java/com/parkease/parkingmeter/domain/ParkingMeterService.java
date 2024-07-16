@@ -148,5 +148,11 @@ public class ParkingMeterService {
     public List<ParkingMeterDTO> listAllParkingMeters() {
         return parkingMeterRepository.findAll().stream().map(ParkingMeterDTO::new).toList();
     }
+
+    public ParkingMeterDTO downTest(String id, long hours) {
+        ParkingMeter parkingMeter = parkingMeterRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        parkingMeter.downHours(hours);
+        return new ParkingMeterDTO(parkingMeterRepository.save(parkingMeter));
+    }
 }
 
