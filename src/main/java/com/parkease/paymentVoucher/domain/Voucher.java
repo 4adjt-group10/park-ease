@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.math.BigDecimal.ZERO;
 import static java.time.LocalDateTime.*;
@@ -67,6 +68,7 @@ public class Voucher {
 
     //todo melhorar a logica para tempo fixo
     public Voucher(List<Payment> payments, ParkingMeter parkingMeter, BigDecimal extraCurrentPrice) {
+
         this(payments.stream().findFirst().get().getAmount(),
                 payments.get(payments.size() - 1).getAmount(),
                 parkingMeter.getStartAt(),
