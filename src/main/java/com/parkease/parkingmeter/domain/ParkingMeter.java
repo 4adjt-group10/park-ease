@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+import static java.time.LocalDateTime.now;
+
 @Document
 public class ParkingMeter {
 
@@ -97,4 +99,7 @@ public class ParkingMeter {
         this.startAt = startAt.minusHours(hours);
     }
 
+    public boolean isLate() {
+        return this.isFixedTime() && endAt.isBefore(now());
+    }
 }

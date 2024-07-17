@@ -18,13 +18,18 @@ import com.parkease.paymentVoucher.domain.Voucher;
 import com.parkease.vehicle.domain.Vehicle;
 import com.parkease.vehicle.domain.VehicleService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
+import static com.parkease.parkingmeter.application.ParkingMeterType.FIXED_TIME;
 import static com.parkease.payment.domain.PaymentMethod.PIX;
 import static com.parkease.payment.domain.PaymentStatus.PENDING;
 import static java.math.BigDecimal.valueOf;
@@ -40,8 +45,16 @@ public class ParkingMeterService {
     private final PaymentService paymentService;
     private final InvoiceService invoiceService;
     private final PaymentVoucherService paymentVoucherService;
+    private final Logger logger = Logger.getLogger(ParkingMeterService.class.getName());
 
-    public ParkingMeterService(ParkingMeterRepository parkingMeterRepository, PriceService priceService, DriverService driverService, VehicleService vehicleService, PaymentService paymentService, InvoiceService invoiceService, PaymentVoucherService paymentVoucherService) {
+
+    public ParkingMeterService(ParkingMeterRepository parkingMeterRepository,
+                               PriceService priceService,
+                               DriverService driverService,
+                               VehicleService vehicleService,
+                               PaymentService paymentService,
+                               InvoiceService invoiceService,
+                               PaymentVoucherService paymentVoucherService) {
         this.parkingMeterRepository = parkingMeterRepository;
         this.priceService = priceService;
         this.driverService = driverService;
@@ -153,6 +166,43 @@ public class ParkingMeterService {
         ParkingMeter parkingMeter = parkingMeterRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         parkingMeter.downHours(hours);
         return new ParkingMeterDTO(parkingMeterRepository.save(parkingMeter));
+    }
+
+    /**
+     * This method is scheduled to run every 10 minutes, every day.
+     * It executes the fixedTimeAlert method at the start of each tenth minute of every hour, across all days.
+     * {@code @Scheduled(cron = "0 0/10 * * * *")} configures this scheduling.
+     */
+    @Scheduled(cron = "0 0/10 * * * *")
+    @Async
+    public void fixedTimeAlert() {
+        parkingMeterRepository.findAllByTypeAndEndAtBefore(FIXED_TIME, now())
+                .forEach(parkingMeter -> {
+                    logger.warning("ParkingMeter " + parkingMeter.getId() + " is late");
+                    logger.info("Sending alert message to external service");
+                });
+        logger.info("Fixed time alert executed");
+    }
+
+    /**
+     * This method is scheduled to run every 10 minutes, every day.
+     * It executes the variableTimeAlert method at the start of each tenth minute of every hour, across all days.
+     * {@code @Scheduled(cron = "0 0/10 * * * *")} configures this scheduling.
+     */
+    @Scheduled(cron = "0 0/10 * * * *")
+    @Async
+    public void variableTimeAlert() {
+        parkingMeterRepository.findAllByType(FIXED_TIME)
+                .stream()
+                .filter(parkingMeter -> {
+                    long minutesSinceStart = ChronoUnit.MINUTES.between(parkingMeter.getStartAt(), now());
+                    long minutesUntilNextHour = 60 - (minutesSinceStart % 60);
+                    return minutesUntilNextHour <= 5;
+                }).forEach(parkingMeter -> {
+                    logger.warning("ParkingMeter " + parkingMeter.getId() + " will add 1 hour");
+                    logger.info("Sending alert message to external service");
+                });
+        logger.info("Variable time alert executed");
     }
 }
 
