@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import static com.parkease.parkingmeter.application.ParkingMeterType.FIXED_TIME;
+import static com.parkease.parkingmeter.application.ParkingMeterType.VARIABLE_TIME;
 import static com.parkease.payment.domain.PaymentMethod.PIX;
 import static com.parkease.payment.domain.PaymentStatus.PENDING;
 import static java.math.BigDecimal.valueOf;
@@ -192,12 +193,12 @@ public class ParkingMeterService {
     @Scheduled(cron = "0 0/10 * * * *")
     @Async
     public void variableTimeAlert() {
-        parkingMeterRepository.findAllByType(FIXED_TIME)
+        parkingMeterRepository.findAllByType(VARIABLE_TIME)
                 .stream()
                 .filter(parkingMeter -> {
                     long minutesSinceStart = ChronoUnit.MINUTES.between(parkingMeter.getStartAt(), now());
                     long minutesUntilNextHour = 60 - (minutesSinceStart % 60);
-                    return minutesUntilNextHour <= 5;
+                    return minutesUntilNextHour <= 10;
                 }).forEach(parkingMeter -> {
                     logger.warning("ParkingMeter " + parkingMeter.getId() + " will add 1 hour");
                     logger.info("Sending alert message to external service");
