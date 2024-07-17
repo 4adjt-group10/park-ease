@@ -65,7 +65,7 @@ public class PaymentService {
     }
 
     public List<Payment> findAllByDriver(String driverId) {
-        return paymentRepository.findAllByDriverId(driverId);
+        return paymentRepository.findAllByDriverIdOrderByCreationDate(driverId);
     }
 
     public void deleteAll(String driverId) {

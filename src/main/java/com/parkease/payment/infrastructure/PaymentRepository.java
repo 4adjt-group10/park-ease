@@ -10,7 +10,7 @@ public interface PaymentRepository extends MongoRepository<Payment, String> {
 
     Optional<Payment> findFirstByDriverIdOrderByCreationDateDesc(String driverId);
 
-    List<Payment> findAllByDriverId(String driverId);
+    List<Payment> findAllByDriverIdOrderByCreationDate(String driverId);
 
     void deleteAllByDriverId(String driverId);
 }

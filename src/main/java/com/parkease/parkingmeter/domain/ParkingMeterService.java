@@ -129,7 +129,7 @@ public class ParkingMeterService {
             List<Payment> payments = paymentService.findAllByDriver(parkingMeter.getDriverId());
             BigDecimal extraCurrentPrice = payments.get(payments.size() - 1).getAmount()
                     .divide(valueOf(parkingMeter.getTotalHours(parkingMeter.getEndAt(), extraLeft)));
-            Voucher voucher = paymentVoucherService.createdVoucherFixedTime(payments, parkingMeter, extraCurrentPrice);
+            Voucher voucher = paymentVoucherService.createdVoucherFixedTime(payments, parkingMeter, extraCurrentPrice, extraLeft);
             deleteAll(parkingMeter);
             return new VoucherDTO(voucher, driver.getFullName(), vehicle.getLicensePlate());
         }else{

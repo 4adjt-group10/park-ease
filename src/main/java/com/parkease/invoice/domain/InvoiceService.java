@@ -34,12 +34,12 @@ public class InvoiceService {
     @Transactional
     public void createInvoice(Payment payment, LocalDateTime creationDate) {
         Invoice invoice = invoiceRepository.save(new Invoice(payment, creationDate));
-        ResponseEntity<Invoice> response = restTemplate
-                .postForEntity("https://run.mocky.io/v3/025c106e-d4ee-457d-9168-2b1df7a2dc40?mocky-delay=1s", invoice, Invoice.class);
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.warning("Failed to process invoice - " + invoice.getId() + " - Status: " + response.getStatusCode());
-            throw new InvoiceProcessingException("Invoice processing failed: Try again");
-        }
+//        ResponseEntity<Invoice> response = restTemplate
+//                .postForEntity("https://run.mocky.io/v3/025c106e-d4ee-457d-9168-2b1df7a2dc40?mocky-delay=1s", invoice, Invoice.class);
+//        if (!response.getStatusCode().is2xxSuccessful()) {
+//            logger.warning("Failed to process invoice - " + invoice.getId() + " - Status: " + response.getStatusCode());
+//            throw new InvoiceProcessingException("Invoice processing failed: Try again");
+//        }
 
         invoice.processed();
         invoiceRepository.save(invoice);
