@@ -9,6 +9,7 @@ services:
       - MONGO_INITDB_DATABASE=parkesase
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=secret
+      - TZ=America/Sao_Paulo
     ports:
       - 27017:27017
     networks:
@@ -28,6 +29,7 @@ services:
       - ME_CONFIG_BASICAUTH_PASSWORD=pass
       - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
       - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+      - TZ=America/Sao_Paulo
     networks:
       - mongo-network
     depends_on:
@@ -43,6 +45,7 @@ services:
       - POSTGRES_DB=mydatabase
       - POSTGRES_PASSWORD=secret
       - POSTGRES_USER=myuser
+      - TZ=America/Sao_Paulo
     ports:
       - 5432:5432
     networks:
@@ -53,6 +56,7 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
       - PGADMIN_DEFAULT_PASSWORD=admin
+      - TZ=America/Sao_Paulo
     ports:
       - 5050:80
     networks:
@@ -67,6 +71,8 @@ services:
       - ./:/app
     working_dir: /app
     command: bash -c "mvn clean install && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar target/ParkEase.jar"
+    environment:
+      - TZ=America/Sao_Paulo
     ports:
       - 8080:8080
       - 5005:5005

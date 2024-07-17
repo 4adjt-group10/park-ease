@@ -92,4 +92,9 @@ public class ParkingMeter {
         return (long) Math.ceil(differenceInMinutes / 60.0);
     }
 
+    public void downHours(long hours) {
+        this.endAt = endAt.minusHours(hours);
+        this.startAt = startAt.minusHours(hours);
+    }
+
 }

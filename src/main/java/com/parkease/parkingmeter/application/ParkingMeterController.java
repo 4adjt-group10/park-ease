@@ -32,12 +32,17 @@ public class ParkingMeterController {
     }
 
     @PostMapping("/leaving/{id}/fixed-time")
-    public ResponseEntity<VoucherDTO> leaving (@PathVariable String id, @RequestBody Optional<PaymentMethod> paymentMethod) {
+    public ResponseEntity<VoucherDTO> leaving(@PathVariable String id, @RequestBody Optional<PaymentMethod> paymentMethod) {
         return ResponseEntity.ok(parkingMeterService.leavingFixedTime(id, paymentMethod));
     }
 
     @GetMapping("/list-all")
     public ResponseEntity<List<ParkingMeterDTO>> listAllParkingMeters() {
         return ResponseEntity.ok(parkingMeterService.listAllParkingMeters());
+    }
+
+    @PostMapping("/down-test/{id}/{hours}")
+    public ResponseEntity<ParkingMeterDTO> downTest(@PathVariable String id, @PathVariable long hours) {
+        return ResponseEntity.ok(parkingMeterService.downTest(id, hours));
     }
 }

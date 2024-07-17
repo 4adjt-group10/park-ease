@@ -2,7 +2,8 @@ package com.parkease.paymentVoucher.domain;
 
 import com.parkease.parkingmeter.domain.ParkingMeter;
 import com.parkease.payment.domain.Payment;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.math.BigDecimal.ZERO;
+import static java.time.LocalDateTime.now;
 
 @Entity
 public class Voucher {
@@ -38,6 +40,7 @@ public class Voucher {
                    BigDecimal extraCurrentPrice,
                    String driverId,
                    String vehicleId) {
+        this.id = UUID.randomUUID();
         this.value = value;
         this.extraValue = extraValue;
         this.arrivedAt = arrivedAt;
@@ -53,21 +56,24 @@ public class Voucher {
         this(payment.getAmount(),
                 ZERO,
                 parkingMeter.getStartAt(),
-                parkingMeter.getEndAt(),
-                parkingMeter.getTotalHours(parkingMeter.getStartAt(),parkingMeter.getEndAt()),
+                now(),
+                parkingMeter.getTotalHours(parkingMeter.getStartAt(), now()),
                 parkingMeter.getPrice(),
                 ZERO,
                 parkingMeter.getDriverId(),
                 parkingMeter.getVehicleId());
     }
 
-    //todo melhorar a logica para tempo fixo
-    public Voucher(List<Payment> payments, ParkingMeter parkingMeter, BigDecimal extraCurrentPrice) {
+    public Voucher(List<Payment> payments,
+                   ParkingMeter parkingMeter,
+                   BigDecimal extraCurrentPrice,
+                   LocalDateTime extraLeft) {
+
         this(payments.stream().findFirst().get().getAmount(),
                 payments.get(payments.size() - 1).getAmount(),
                 parkingMeter.getStartAt(),
-                parkingMeter.getEndAt(),
-                parkingMeter.getTotalHours(parkingMeter.getStartAt(), parkingMeter.getEndAt()),
+                extraLeft,
+                parkingMeter.getTotalHours(parkingMeter.getStartAt(), extraLeft),
                 parkingMeter.getPrice(),
                 extraCurrentPrice,
                 parkingMeter.getDriverId(),
