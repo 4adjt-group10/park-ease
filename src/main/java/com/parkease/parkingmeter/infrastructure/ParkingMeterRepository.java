@@ -11,5 +11,7 @@ public interface ParkingMeterRepository extends MongoRepository<ParkingMeter, St
 
     List<ParkingMeter> findAllByTypeAndEndAtBefore(ParkingMeterType type, LocalDateTime endAt);
 
+    List<ParkingMeter> findAllByTypeAndEndAtAfter(ParkingMeterType type, LocalDateTime endAt);
+
     List<ParkingMeter> findAllByType(ParkingMeterType type);
 }

@@ -105,15 +105,19 @@ public class ParkingMeterService {
         }
     }
 
-    public VoucherDTO leavingVariableTime(String parkingMeterId) {
+    public VoucherDTO leavingVariableTime(String parkingMeterId, Optional<PaymentMethod> paymentMethod) {
         ParkingMeter parkingMeter = parkingMeterRepository.findById(parkingMeterId)
                 .orElseThrow(EntityNotFoundException::new);
         Driver driver = driverService.findById(parkingMeter.getDriverId());
         Vehicle vehicle = vehicleService.findById(parkingMeter.getVehicleId());
-        BigDecimal priceValue = parkingMeter.getPrice();
-        BigDecimal finalPrice = priceValue.multiply(valueOf(parkingMeter.getTotalHours(parkingMeter.getStartAt(), now())));
+        BigDecimal finalPrice = parkingMeter.getPrice()
+                .multiply(valueOf(parkingMeter.getTotalHours(parkingMeter.getStartAt(), now())));
+        paymentMethod.filter(PIX::equals).ifPresent(method -> {
+            throw new IllegalArgumentException("PIX payment method is not allowed");
+        });
+        PaymentMethod newPaymentMethod = paymentMethod.orElse(parkingMeter.getPaymentMethod());
         Payment payment = paymentService
-                .savePayment(new Payment(driver, finalPrice, parkingMeter.getPaymentMethod(), PENDING));
+                .savePayment(new Payment(driver, finalPrice, newPaymentMethod, PENDING));
         invoiceService.createInvoice(payment, now());
         Voucher voucher = paymentVoucherService.createdVoucherVariable(payment, parkingMeter);
         deleteAll(parkingMeter);
@@ -125,25 +129,22 @@ public class ParkingMeterService {
                 .orElseThrow(EntityNotFoundException::new);
         Driver driver = driverService.findById(parkingMeter.getDriverId());
         Vehicle vehicle = vehicleService.findById(parkingMeter.getVehicleId());
-        LocalDateTime extraLeft;
-        if(parkingMeter.getEndAt().isBefore(now())) {
+        LocalDateTime now = now();
+        if(parkingMeter.getEndAt().isBefore(now)) {
             if (paymentMethod.isEmpty()) {
                 throw new IllegalArgumentException("Payment method is required");
             }
             if (paymentMethod.get().equals(PIX)) {
                 throw new IllegalArgumentException("PIX payment method is not allowed");
             }
-            PriceDTO priceValue  = priceService.findCurrentPrice();
-            BigDecimal finalPrice = priceValue.value()
-                    .multiply(valueOf(parkingMeter.getTotalHours(parkingMeter.getEndAt(), now())));
+            BigDecimal finalPrice = getFixedTimeFinalPrice(parkingMeter, now);
             Payment payment = paymentService
                     .savePayment(new Payment(driver, finalPrice, paymentMethod.get(), PENDING));
-            extraLeft = now();
-            invoiceService.createInvoice(payment, extraLeft);
+            invoiceService.createInvoice(payment, now);
             List<Payment> payments = paymentService.findAllByDriver(parkingMeter.getDriverId());
             BigDecimal extraCurrentPrice = payments.get(payments.size() - 1).getAmount()
-                    .divide(valueOf(parkingMeter.getTotalHours(parkingMeter.getEndAt(), extraLeft)));
-            Voucher voucher = paymentVoucherService.createdVoucherFixedTime(payments, parkingMeter, extraCurrentPrice, extraLeft);
+                    .divide(valueOf(parkingMeter.getTotalHours(parkingMeter.getEndAt(), now)));
+            Voucher voucher = paymentVoucherService.createdVoucherFixedTime(payments, parkingMeter, extraCurrentPrice, now);
             deleteAll(parkingMeter);
             return new VoucherDTO(voucher, driver.getFullName(), vehicle.getLicensePlate());
         }else{
@@ -152,6 +153,17 @@ public class ParkingMeterService {
             deleteAll(parkingMeter);
             return new VoucherDTO(voucher, driver.getFullName(), vehicle.getLicensePlate());
         }
+    }
+
+    private BigDecimal getFixedTimeFinalPrice(ParkingMeter parkingMeter, LocalDateTime now) {
+        PriceDTO priceValue  = priceService.findCurrentPrice();
+        return priceValue.value()
+                .multiply(valueOf(parkingMeter.getTotalHours(parkingMeter.getEndAt(), now)));
+    }
+
+    public BigDecimal getVariableTimeFinalPrice(ParkingMeter parkingMeter) {
+        return parkingMeter.getPrice()
+                .multiply(valueOf(parkingMeter.getTotalHours(parkingMeter.getStartAt(), now())));
     }
 
     private void deleteAll(ParkingMeter parkingMeter) {
@@ -177,12 +189,27 @@ public class ParkingMeterService {
     @Scheduled(cron = "0 0/10 * * * *")
     @Async
     public void fixedTimeAlert() {
-        parkingMeterRepository.findAllByTypeAndEndAtBefore(FIXED_TIME, now())
-                .forEach(parkingMeter -> {
+        LocalDateTime now = now();
+        parkingMeterRepository.findAllByTypeAndEndAtAfter(FIXED_TIME, now)
+                .stream()
+                .filter(parkingMeter -> {
+                    long minutesToEnd = ChronoUnit.MINUTES.between(now, parkingMeter.getEndAt());
+                    return minutesToEnd <= 10;
+                }).forEach(parkingMeter -> {
                     logger.warning("ParkingMeter " + parkingMeter.getId() + " is late");
                     logger.info("Sending alert message to external service");
                 });
-        logger.info("Fixed time alert executed");
+        parkingMeterRepository.findAllByTypeAndEndAtBefore(FIXED_TIME, now)
+                .stream()
+                .filter(parkingMeter -> {
+                    long minutesSinceStart = ChronoUnit.MINUTES.between(parkingMeter.getEndAt(), now);
+                    long minutesUntilNextHour = 60 - (minutesSinceStart % 60);
+                    return minutesUntilNextHour <= 10;
+                }).forEach(parkingMeter -> {
+                    logger.warning("ParkingMeter " + parkingMeter.getId() + " will add 1 hour");
+                    logger.info("Sending alert message to external service");
+                });
+        logger.info("Fixed time alerts executed");
     }
 
     /**
@@ -193,10 +220,11 @@ public class ParkingMeterService {
     @Scheduled(cron = "0 0/10 * * * *")
     @Async
     public void variableTimeAlert() {
+        LocalDateTime now = now();
         parkingMeterRepository.findAllByType(VARIABLE_TIME)
                 .stream()
                 .filter(parkingMeter -> {
-                    long minutesSinceStart = ChronoUnit.MINUTES.between(parkingMeter.getStartAt(), now());
+                    long minutesSinceStart = ChronoUnit.MINUTES.between(parkingMeter.getStartAt(), now);
                     long minutesUntilNextHour = 60 - (minutesSinceStart % 60);
                     return minutesUntilNextHour <= 10;
                 }).forEach(parkingMeter -> {
@@ -204,6 +232,13 @@ public class ParkingMeterService {
                     logger.info("Sending alert message to external service");
                 });
         logger.info("Variable time alert executed");
+    }
+
+    public BigDecimal getFinalPrice(String id) {
+        ParkingMeter parkingMeter = parkingMeterRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return parkingMeter.isFixedTime()
+                ? getFixedTimeFinalPrice(parkingMeter, now())
+                : getVariableTimeFinalPrice(parkingMeter);
     }
 }
 

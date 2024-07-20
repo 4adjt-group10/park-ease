@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
 
@@ -95,7 +96,8 @@ public class ParkingMeter {
     }
 
     public void downHours(long hours) {
-        this.endAt = endAt.minusHours(hours);
+        Optional.ofNullable(endAt)
+                .ifPresent(ea -> this.endAt = ea.minusHours(hours));
         this.startAt = startAt.minusHours(hours);
     }
 
