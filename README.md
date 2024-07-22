@@ -25,7 +25,7 @@ O sistema de parquímetro oferece funcionalidades como:
 
 ### Pré-requisitos
 
-- Docker e Docker Compose instalados na máquina.
+- Docker instalado na máquina.
 
 ### Passos para Executar
 
@@ -48,11 +48,18 @@ Após o projeto estar em execução, você pode acessar a documentação e testa
   http://localhost:8080/swagger-ui/index.html#/
 ```
 
+## Configuração Debug no InteliJ
+
+1. No menu superior acesse RUN > Edit configuration;
+2. Clique em "Add New Configuration";
+3. Selecione a configuração (Remote JVM Debug):
+    - ![img_1.png](img_1.png)
+
 ## Acessos aos Serviços
 
 ### Mongo Express
 
-- Acesse: [http://0.0.0.0:8081/db/parkesase/](http://0.0.0.0:8081/db/parkesase/)
+- Acesse: [http://0.0.0.0:8081/db/parkesase/](http://0.0.0.0:8081/db/parkesase/) | [http://127.0.0.1:8081/db/parkesase/](http://127.0.0.1:8081/db/parkesase/)
 - Usuário: `admin`
 - Senha: `pass`
 
@@ -67,7 +74,7 @@ Após o projeto estar em execução, você pode acessar a documentação e testa
   - **Name**: Nome à sua escolha (Ex: ParkEase)
   - **Connection**:
     - **Host name/address**: `postgres`
-    - **Port**: `5432`
+    - **Port**: `5050`
     - **Maintenance database**: `mydatabase`
     - **Username**: `myuser`
     - **Password**: `secret`
@@ -97,3 +104,31 @@ Após o projeto estar em execução, você pode acessar a documentação e testa
   - Clique em **Save**
 
 ---
+
+# Fluxo de Teste
+
+### 1. Criar preço praticado na rota de admin 
+- [http://localhost:8080/swagger-ui/index.html#/administrator-controller/create_1](http://localhost:8080/swagger-ui/index.html#/administrator-controller/create_1)
+
+### 2. Registro de condutor e veiculo: 
+obs: pode-se cadastrar o condutor junto do veiculo ou separado. 
+
+#### Cadastro de condutor com veiculo: 
+- [http://localhost:8080/swagger-ui/index.html#/driver-controller/createDriver](http://localhost:8080/swagger-ui/index.html#/driver-controller/createDriver)
+
+#### Cadastro apenas de veiculo: 
+- [http://localhost:8080/swagger-ui/index.html#/vehicle-controller/create](http://localhost:8080/swagger-ui/index.html#/vehicle-controller/create)
+
+### 3. Iniciando fluxo de estacionamento:
+
+- [http://localhost:8080/swagger-ui/index.html#/parking-meter-controller/parkin](http://localhost:8080/swagger-ui/index.html#/parking-meter-controller/parking)
+ - Selecione o tipo de parada (Fixo/Variavel);
+ - Selecione o tipo de pagamento (Pix/Cartão);
+
+### 4. Sistema realizara o monitoramento automatico de 10min em 10min 
+ - Os avisos de monitoramento são exibidos no terminal da aplicação. 
+
+### 5. Quando o fluxo é encerrado, o sistema gera um recibo com as informações
+-  Tempo Estacionado
+-  Tarifa aplicada 
+-  Valor total pago
