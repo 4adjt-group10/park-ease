@@ -26,4 +26,9 @@ public class DriverController {
     public ResponseEntity<DriverDTO> createDriver(@RequestBody @Valid DriverFormDTO formDTO) {
         return ResponseEntity.ok(driverService.createDriver(formDTO));
     }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<DriverDTO> updateDriver(@PathVariable String id, @RequestBody @Valid DriverUpdateDTO formDTO) {
+        return ResponseEntity.ok(driverService.updateDriver(id, formDTO));
+    }
 }

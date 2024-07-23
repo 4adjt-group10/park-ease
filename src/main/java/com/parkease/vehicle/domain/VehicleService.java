@@ -1,6 +1,7 @@
 package com.parkease.vehicle.domain;
 
 import com.parkease.vehicle.application.VehicleDTO;
+import com.parkease.vehicle.application.VehicleFormDTO;
 import com.parkease.vehicle.infrastructure.VehicleRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -42,5 +43,11 @@ public class VehicleService {
 
     public boolean existsById(String id) {
         return vehicleRepository.existsById(id);
+    }
+
+    public VehicleDTO update(String id, VehicleFormDTO formDTO) {
+        Vehicle vehicle = findById(id);
+        vehicle.merge(formDTO);
+        return new VehicleDTO(vehicleRepository.save(vehicle));
     }
 }

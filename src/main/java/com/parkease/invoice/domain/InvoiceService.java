@@ -1,16 +1,13 @@
 package com.parkease.invoice.domain;
 
-import com.parkease.InvoiceProcessingException;
 import com.parkease.invoice.application.InvoiceDTO;
 import com.parkease.invoice.infrastructure.InvoiceRepository;
 import com.parkease.parkingmeter.domain.ParkingMeter;
 import com.parkease.payment.domain.Payment;
 import com.parkease.payment.domain.PaymentService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,27 +18,20 @@ public class InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
     private final PaymentService paymentService;
-    private final RestTemplate restTemplate;
     private final Logger logger = Logger.getLogger(InvoiceService.class.getName());
 
-    public InvoiceService(InvoiceRepository invoiceRepository, PaymentService paymentService, RestTemplate restTemplate) {
+    public InvoiceService(InvoiceRepository invoiceRepository, PaymentService paymentService) {
         this.invoiceRepository = invoiceRepository;
         this.paymentService = paymentService;
-        this.restTemplate = restTemplate;
     }
 
     @Async
     @Transactional
     public void createInvoice(Payment payment, LocalDateTime creationDate) {
         Invoice invoice = invoiceRepository.save(new Invoice(payment, creationDate));
-//        ResponseEntity<Invoice> response = restTemplate
-//                .postForEntity("https://run.mocky.io/v3/025c106e-d4ee-457d-9168-2b1df7a2dc40?mocky-delay=1s", invoice, Invoice.class);
-//        if (!response.getStatusCode().is2xxSuccessful()) {
-//            logger.warning("Failed to process invoice - " + invoice.getId() + " - Status: " + response.getStatusCode());
-//            throw new InvoiceProcessingException("Invoice processing failed: Try again");
-//        }
-
+        logger.info("Invoice created: " + invoice.getId());
         invoice.processed();
+        logger.info("Invoice processed: " + invoice.getId());
         invoiceRepository.save(invoice);
         paymentService.processPayment(invoice.getPayment());
     }

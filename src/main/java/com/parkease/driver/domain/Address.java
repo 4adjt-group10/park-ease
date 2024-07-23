@@ -46,4 +46,11 @@ public class Address {
     public String getZipCode() {
         return zipCode;
     }
+
+    public void merge(AddressFormDTO formDTO) {
+        this.street = formDTO.address();
+        this.city = formDTO.city();
+        this.state = formDTO.state();
+        this.zipCode = formDTO.zipCode();
+    }
 }

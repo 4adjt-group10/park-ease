@@ -2,6 +2,7 @@ package com.parkease.driver.domain;
 
 import com.parkease.driver.application.DriverDTO;
 import com.parkease.driver.application.DriverFormDTO;
+import com.parkease.driver.application.DriverUpdateDTO;
 import com.parkease.driver.infrastructure.DriverRepository;
 import com.parkease.vehicle.application.VehicleDTO;
 import com.parkease.vehicle.application.VehicleFormDTO;
@@ -44,14 +45,19 @@ public class DriverService {
         return driverRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
-    public void updateDriver(Driver driver) {
-        driverRepository.save(driver);
-    }
-
     public List<DriverDTO> listDrivers() {
         return driverRepository.findAll().stream().map(DriverDTO::new).toList();
     }
 
+    @Transactional
+    public DriverDTO updateDriver(String id, DriverUpdateDTO formDTO) {
+        Driver driver = findById(id);
+        driver.merge(formDTO);
+        addressService.updateAddress(driver.getAddress(), formDTO.address());
+        return new DriverDTO(driverRepository.save(driver));
+    }
+
+    @Transactional
     public VehicleDTO addVehicle(VehicleFormDTO vehicleFormDTO) {
         Driver driver = findById(vehicleFormDTO.driverId());
         Vehicle vehicle = vehicleService.save(new Vehicle(vehicleFormDTO, driver.getId()));
@@ -67,6 +73,15 @@ public class DriverService {
         driver.removeVehicle(vehicle);
         vehicleService.delete(vehicle);
         driverRepository.save(driver);
+    }
+
+    @Transactional
+    public VehicleDTO updateVehicle(String id, VehicleFormDTO formDTO) {
+        Driver driver = findById(formDTO.driverId());
+        VehicleDTO updatedVehicle = vehicleService.update(id, formDTO);
+        driver.updateVehicle(vehicleService.findById(id));
+        driverRepository.save(driver);
+        return updatedVehicle;
     }
 
     public boolean existsById(String id) {

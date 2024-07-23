@@ -2,6 +2,7 @@ package com.parkease.vehicle.domain;
 
 public enum VehicleType {
     SEDAN("Sedan"),
+    HATCHBACK("Hatchback"),
     SUV("SUV"),
     TRUCK("Truck"),
     MOTORCYCLE("Motorcycle"),

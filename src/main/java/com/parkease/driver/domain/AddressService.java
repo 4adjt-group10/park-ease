@@ -22,7 +22,8 @@ public class AddressService {
         return addressRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
-    public void updateAddress(Address address) {
+    public void updateAddress(Address address, AddressFormDTO formDTO) {
+        address.merge(formDTO);
         addressRepository.save(address);
     }
 }

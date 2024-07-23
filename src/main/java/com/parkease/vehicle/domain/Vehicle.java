@@ -81,4 +81,13 @@ public class Vehicle {
     public String getColor() {
         return color;
     }
+
+    public void merge(VehicleFormDTO formDTO) {
+        this.brand = formDTO.brand();
+        this.model = formDTO.model();
+        this.color = formDTO.color();
+        this.year = formDTO.year();
+        this.licensePlate = formDTO.licensePlate();
+        this.type = formDTO.type();
+    }
 }

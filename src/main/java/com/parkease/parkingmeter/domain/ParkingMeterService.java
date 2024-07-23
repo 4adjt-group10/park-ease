@@ -182,11 +182,10 @@ public class ParkingMeterService {
     }
 
     /**
-     * This method is scheduled to run every 10 minutes, every day.
-     * It executes the fixedTimeAlert method at the start of each tenth minute of every hour, across all days.
-     * {@code @Scheduled(cron = "0 0/10 * * * *")} configures this scheduling.
+     * This method is scheduled to run every 5 minutes, every day.
+     * {@code @Scheduled(cron = "0 0/5 * * * *")} configures this scheduling.
      */
-    @Scheduled(cron = "0 0/10 * * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     @Async
     public void fixedTimeAlert() {
         LocalDateTime now = now();
@@ -213,11 +212,10 @@ public class ParkingMeterService {
     }
 
     /**
-     * This method is scheduled to run every 10 minutes, every day.
-     * It executes the variableTimeAlert method at the start of each tenth minute of every hour, across all days.
-     * {@code @Scheduled(cron = "0 0/10 * * * *")} configures this scheduling.
+     * This method is scheduled to run every 5 minutes, every day.
+     * {@code @Scheduled(cron = "0 0/5 * * * *")} configures this scheduling.
      */
-    @Scheduled(cron = "0 0/10 * * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     @Async
     public void variableTimeAlert() {
         LocalDateTime now = now();

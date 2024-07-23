@@ -37,6 +37,11 @@ public class VehicleController {
         return ResponseEntity.created(URI.create("/vehicle/" + vehicleDTO.id())).body(vehicleDTO);
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<VehicleDTO> update(@PathVariable String id, VehicleFormDTO formDTO) {
+        return ResponseEntity.ok(driverService.updateVehicle(id, formDTO));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         driverService.removeVehicle(id);
