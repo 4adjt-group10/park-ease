@@ -1,6 +1,7 @@
 package com.parkease.driver.domain;
 
 import com.parkease.driver.application.DriverFormDTO;
+import com.parkease.driver.application.DriverUpdateDTO;
 import com.parkease.vehicle.domain.Vehicle;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -73,5 +74,17 @@ public class Driver {
 
     public void removeVehicle(Vehicle vehicle) {
         this.vehicles.removeIf(v -> v.getId().equals(vehicle.getId()));
+    }
+
+    public void updateVehicle(Vehicle vehicle) {
+        this.vehicles.removeIf(v -> v.getId().equals(vehicle.getId()));
+        this.vehicles.add(vehicle);
+    }
+
+    public void merge(DriverUpdateDTO formDTO) {
+        this.firstName = formDTO.firstName();
+        this.lastName = formDTO.lastName();
+        this.email = formDTO.email();
+        this.phone = formDTO.phone();
     }
 }
