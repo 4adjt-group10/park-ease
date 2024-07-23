@@ -3,6 +3,7 @@ package com.parkease.vehicle.application;
 import com.parkease.driver.domain.DriverService;
 import com.parkease.vehicle.domain.Vehicle;
 import com.parkease.vehicle.domain.VehicleService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,13 +33,13 @@ public class VehicleController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<VehicleDTO> create(VehicleFormDTO formDTO) {
+    public ResponseEntity<VehicleDTO> create(@RequestBody @Valid VehicleFormDTO formDTO) {
         VehicleDTO vehicleDTO = driverService.addVehicle(formDTO);
         return ResponseEntity.created(URI.create("/vehicle/" + vehicleDTO.id())).body(vehicleDTO);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<VehicleDTO> update(@PathVariable String id, VehicleFormDTO formDTO) {
+    public ResponseEntity<VehicleDTO> update(@PathVariable String id, @RequestBody @Valid VehicleFormDTO formDTO) {
         return ResponseEntity.ok(driverService.updateVehicle(id, formDTO));
     }
 
