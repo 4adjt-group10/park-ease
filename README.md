@@ -125,10 +125,34 @@ obs: pode-se cadastrar o condutor junto do veiculo ou separado.
  - Selecione o tipo de parada (Fixo/Variavel);
  - Selecione o tipo de pagamento (Pix/Cartão);
 
-### 4. Sistema realizara o monitoramento automatico de 10min em 10min 
+### 4. Sistema realizara o monitoramento automatico de 05min em 05min 
  - Os avisos de monitoramento são exibidos no terminal da aplicação. 
 
-### 5. Quando o fluxo é encerrado, o sistema gera um recibo com as informações
--  Tempo Estacionado
--  Tarifa aplicada 
--  Valor total pago
+### 5. Quando o fluxo é encerrado, o sistema gera um recibo com as informações podendo variar de acordo com o tipo de parada selecionado, conforme os seguintes cenários:
+- Cenários:
+  - Cenário 1: Selecionada saída para tipo de parada fixa, com permanência apenas no tempo estipulado na entrada [http://localhost:8080/swagger-ui/index.html#/parking-meter-controller/leaving](http://localhost:8080/swagger-ui/index.html#/parking-meter-controller/leaving):
+    - Passado o id do _'arriving'_ serão apresentadas as seguintes informações:
+      - Tempo total estacionado: Cálculo de horas entre o momento de entrada e de saída (dentro do intervalo estipulado no momento de entrada);
+      - Tarifa corrente: Valor da tarifa corrente no momento de entrada;
+      - Valor total pago: Cálculo de horas X tarifa corrente;
+      - Data e horário: De chegada e de saída;
+      - Os campos de valor extra e tarifa extra deverão estar **zerados**, já que só foi utilizado o valor estipulado inicialmente;
+      - Nome do motorista;
+      - Placa do veículo.
+ 
+    - Após a saída e pagamento será gerado o _'invoice'_ com as informações referentes ao pagamento, com informações do motorista e do veículo, o valor, o método de pagamento selecionado e o status do pagamento. Também são apresentadas as datas de criação e processamento.
+    
+  - Cenário 2: Selecionada saída para tipo de parada fixa, com permanência em tempo superior ao estipulado no momento de entrada [http://localhost:8080/swagger-ui/index.html#/parking-meter-controller/leaving](http://localhost:8080/swagger-ui/index.html#/parking-meter-controller/leaving):
+    - Passado o id do _'arriving'_ serão apresentadas as seguintes informações:
+      - Valor: referente ao cálculo de horas previstas inicialmente * tarifa corrente inicial;
+      - Valor extra: valor referente ao cálculo de horas extras * tarifa extra;
+      - Data e horário: De chegada e de saída;
+      - Tempo total estacionado: Número total de horas de permanência no estacionamento;
+      - Tarifa aplicada: Valor da tarifa corrente no momento de entrada;
+      - Tarifa extra: Valor da tarifa no momento de saída (aplicada as horas extras de permanência);
+      - Valor total pago: Cálculo de: horas previstas inicialmente * tarifa corrente inicial + (horas extras * tarifa extra);
+      - Nome do motorista;
+      - Placa do veículo.
+    - Após a saída e pagamento será gerado o _'invoice'_ com as informações referentes ao pagamento, com informações do motorista e do veículo, o valor, o método de pagamento selecionado e o status do pagamento. Também são apresentadas as datas de criação e processamento.
+
+  - Cenário 3:
