@@ -109,21 +109,32 @@ Após o projeto estar em execução, você pode acessar a documentação e testa
 
 ### 1. Criar preço praticado na rota de admin 
 - [http://localhost:8080/swagger-ui/index.html#/administrator-controller/create_1](http://localhost:8080/swagger-ui/index.html#/administrator-controller/create_1)
+  -   O primeiro valor vigente ou current price nos informamos o valor em value, o nome em name , e currentPrice passamos como true
+  -   Caso queira criar mais uma tarifa , ela por default nao ficara como currentPrice(valor vigente)
+  -   Para Alterar o currentPrice devera ter um Update para o currentPrice desejado pela rota [http://localhost:8080/swagger-ui/index.html#/administrator-controller/update_1](http://localhost:8080/swagger-ui/index.html#/administrator-controller/update_1)
+  -   para este caso informaremos o id do preço que se deseja deixar como vigente , o valor o nome e o currentePrice devera estar como true, lembrando que se quiser alterar qualquer um desses parametros pode- se alterar tambem
 
 ### 2. Registro de condutor e veiculo: 
 obs: pode-se cadastrar o condutor junto do veiculo ou separado. 
 
 #### Cadastro de condutor com veiculo: 
 - [http://localhost:8080/swagger-ui/index.html#/driver-controller/createDriver](http://localhost:8080/swagger-ui/index.html#/driver-controller/createDriver)
-
+  - Aqui criaremos nosso cadastro de motorista, contendo o primeiro nome(firstName) ,ultimo nome(lastName) ,email(email) ,telefone(phone) ,Endereço(adress) e se quiser um veiculo(vehicle)
+  - Para o endereço deve-se informar  o endereço(address) ,cidade(city) ,estado(state) ,cep(zipCode) e o pais(cpuntry)
+  - Caso queira cadastrar o veiculo nessa parte deve-se informar os dados ,marca(brand) ,modelo(model) ,cor(color) ,ano(year) ,placa(licensePlate) e o tipo(type), neste caso o id do motorista e preenchido automaticamente
 #### Cadastro apenas de veiculo: 
 - [http://localhost:8080/swagger-ui/index.html#/vehicle-controller/create](http://localhost:8080/swagger-ui/index.html#/vehicle-controller/create)
-
+  - Para se cadastrar um carro, neste ponto primeiro temos que ter o id do motorista em mãos, caso nao tenha , exite um endpoint que lista todos os motoristas [http://localhost:8080/swagger-ui/index.html#/driver-controller/listDrivers](http://localhost:8080/swagger-ui/index.html#/driver-controller/listDrivers) 
+  - Contendo o id em mãos ,iniciamos o cadastro do carro passando os parametros marca(brand) ,modelo(model) ,cor(color) ,ano(year) ,placa(licensePlate) e o tipo(type) ,id do motorista (driverId)
 ### 3. Iniciando fluxo de estacionamento:
 
 - [http://localhost:8080/swagger-ui/index.html#/parking-meter-controller/parkin](http://localhost:8080/swagger-ui/index.html#/parking-meter-controller/parking)
- - Selecione o tipo de parada (Fixo/Variavel);
- - Selecione o tipo de pagamento (Pix/Cartão);
+ - Para estacionar o motorista deve informar os seguintes dados
+ - id do motorista (driverID)
+ - id do veiculo (vehicleId) ,caso nao tenha pode-se conseguir pela listagem de motorista, onde volta os dados do mesmo e dos veiculos cadastrados por ele
+ - Selecione o tipo de parada (Fixo/Variavel)
+ - Selecione o tipo de pagamento (Pix/Cartão) ,sendo pix somente aceito na modalidade de tempo fixo
+ - Para o caso de tempo fixo , temos que preencher a variavel de tempo estacionado(timeParking), este valor e um numerico sem casas decimais, que sera o total de horas estacionado
 
 ### 4. Sistema realizara o monitoramento automatico de 10min em 10min 
  - Os avisos de monitoramento são exibidos no terminal da aplicação. 
