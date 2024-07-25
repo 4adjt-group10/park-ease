@@ -1,6 +1,5 @@
 package com.parkease.parkingmeter.application;
 
-import com.parkease.parkingmeter.domain.ParkingMeter;
 import com.parkease.parkingmeter.domain.ParkingMeterService;
 import com.parkease.payment.domain.PaymentMethod;
 import com.parkease.voucher.application.VoucherDTO;
@@ -24,8 +23,8 @@ public class ParkingMeterController {
     }
 
     @PostMapping("/arriving")
-    public ParkingMeter parking(@RequestBody @Valid ParkingMeterFormDTO parkingLotDTO) {
-        return parkingMeterService.arrivingParkingLot(parkingLotDTO);
+    public ResponseEntity<ParkingMeterDTO> parking(@RequestBody @Valid ParkingMeterFormDTO parkingLotDTO) {
+        return ResponseEntity.ok(parkingMeterService.arrivingParkingLot(parkingLotDTO));
     }
 
     @PostMapping("/leaving/{id}/variable-time")

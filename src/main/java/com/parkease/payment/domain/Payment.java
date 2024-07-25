@@ -41,6 +41,10 @@ public class Payment {
         return driver;
     }
 
+    public String getDriverId() {
+        return driver.getId();
+    }
+
     public BigDecimal getAmount() {
         return amount;
     }

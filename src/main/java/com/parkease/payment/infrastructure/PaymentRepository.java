@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface PaymentRepository extends MongoRepository<Payment, String> {
 
-    Optional<Payment> findFirstByDriverIdOrderByCreationDateDesc(String driverId);
+    Optional<Payment> findFirstByDriver_IdOrderByCreationDateDesc(String driverId);
 
-    List<Payment> findAllByDriverIdOrderByCreationDate(String driverId);
+    List<Payment> findAllByDriver_IdOrderByCreationDate(String driverId);
 
-    void deleteAllByDriverId(String driverId);
+    void deleteAllByDriver_Id(String driverId);
 }

@@ -65,23 +65,22 @@ public class ParkingMeterService {
         this.voucherService = voucherService;
     }
 
-    public ParkingMeter arrivingParkingLot(ParkingMeterFormDTO formDTO) {
+    public ParkingMeterDTO arrivingParkingLot(ParkingMeterFormDTO formDTO) {
         return formDTO.hasFixedTime()
                 ? parkingInFixedTime(formDTO)
                 : parkingInVariableTime(formDTO);
     }
 
-    private ParkingMeter parkingInVariableTime(ParkingMeterFormDTO formDTO) {
+    private ParkingMeterDTO parkingInVariableTime(ParkingMeterFormDTO formDTO) {
         if(formDTO.paymentMethod().equals(PIX)) {
             throw new IllegalArgumentException("PIX payment method is not allowed for variable time parking");
         }
         BigDecimal price = priceService.findCurrentPrice().value();
-        return parkingMeterRepository.save(new ParkingMeter(formDTO, now(),
-                null, price));
-
+        ParkingMeter parkingMeter = parkingMeterRepository.save(new ParkingMeter(formDTO, now(), null, price));
+        return new ParkingMeterDTO(parkingMeter);
     }
 
-    private ParkingMeter parkingInFixedTime(ParkingMeterFormDTO formDTO) {
+    private ParkingMeterDTO parkingInFixedTime(ParkingMeterFormDTO formDTO) {
 
         if(!formDTO.hasValidTimeParking()) {
             throw new IllegalArgumentException("Invalid time parking");
@@ -101,7 +100,8 @@ public class ParkingMeterService {
             BigDecimal finalPrice = priceValue.value().multiply(valueOf(fixedTime));
             Payment payment = paymentService.createNewPayment(new PaymentFormDTO(formDTO.driverId(), finalPrice, formDTO.paymentMethod(), PENDING));
             invoiceService.createInvoice(payment, now());
-            return parkingMeterRepository.save(new ParkingMeter(formDTO, now(), endAt, priceValue.value()));
+            ParkingMeter parkingMeter = parkingMeterRepository.save(new ParkingMeter(formDTO, now(), endAt, priceValue.value()));
+            return new ParkingMeterDTO(parkingMeter);
         }
     }
 
@@ -141,7 +141,7 @@ public class ParkingMeterService {
             Payment payment = paymentService
                     .savePayment(new Payment(driver, finalPrice, paymentMethod.get(), PENDING));
             invoiceService.createInvoice(payment, now);
-            List<Payment> payments = paymentService.findAllByDriver(parkingMeter.getDriverId());
+            List<Payment> payments = paymentService.findAllByDriverId(parkingMeter.getDriverId());
             BigDecimal extraCurrentPrice = payments.get(payments.size() - 1).getAmount()
                     .divide(valueOf(parkingMeter.getTotalHours(parkingMeter.getEndAt(), now)));
             Voucher voucher = voucherService.createdVoucherFixedTime(payments, parkingMeter, extraCurrentPrice, now);

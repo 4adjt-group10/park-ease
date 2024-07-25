@@ -124,4 +124,8 @@ public class Voucher {
     public BigDecimal getTotalPaid() {
         return value.add(extraValue);
     }
+
+    public String getTimeToString() {
+        return time + " hour".concat(time > 1L ? "s" : "");
+    }
 }
