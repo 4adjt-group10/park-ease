@@ -1,4 +1,4 @@
-package com.parkease.paymentVoucher.domain;
+package com.parkease.voucher.domain;
 
 import com.parkease.parkingmeter.domain.ParkingMeter;
 import com.parkease.payment.domain.Payment;

@@ -3,7 +3,7 @@ package com.parkease.parkingmeter.application;
 import com.parkease.parkingmeter.domain.ParkingMeter;
 import com.parkease.parkingmeter.domain.ParkingMeterService;
 import com.parkease.payment.domain.PaymentMethod;
-import com.parkease.paymentVoucher.application.VoucherDTO;
+import com.parkease.voucher.application.VoucherDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
