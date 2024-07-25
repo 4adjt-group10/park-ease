@@ -33,12 +33,22 @@ public class VoucherController {
         return ResponseEntity.ok(voucherService.listAllVouchers(pageable));
     }
 
+    @Operation(summary = """
+            Accepts sorting parameters passing them in the URL, such as '?page=2&size=5&sort=arrivedAt,desc' 
+            to fetch the third page (page count starts at 0), with 5 records per page, 
+            sorted by arrivedAt in descending order.
+            """)
     @GetMapping("/list-by-driver/{driverId}")
     public ResponseEntity<Page<VoucherDTO>> listAllByDriver(@Nullable @PageableDefault(size = 20, sort = "arrivedAt", direction = DESC) Pageable pageable,
                                                             @PathVariable(value = "driverId") String driverId) {
         return ResponseEntity.ok(voucherService.listAllVouchersByDriverId(pageable, driverId));
     }
 
+    @Operation(summary = """
+            Accepts sorting parameters passing them in the URL, such as '?page=2&size=5&sort=arrivedAt,desc' 
+            to fetch the third page (page count starts at 0), with 5 records per page, 
+            sorted by arrivedAt in descending order.
+            """)
     @GetMapping("/list-by-arrived-at-between")
     public ResponseEntity<Page<VoucherDTO>> listAllByArrivedAtBetween(@Nullable @PageableDefault(size = 20, sort = "arrivedAt", direction = DESC) Pageable pageable,
                                                                       @RequestBody LocalDateTime start,
