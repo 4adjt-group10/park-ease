@@ -1,4 +1,4 @@
-package com.parkease.paymentVoucher.domain;
+package com.parkease.voucher.domain;
 
 import com.parkease.parkingmeter.domain.ParkingMeter;
 import com.parkease.payment.domain.Payment;
@@ -123,5 +123,9 @@ public class Voucher {
 
     public BigDecimal getTotalPaid() {
         return value.add(extraValue);
+    }
+
+    public String getTimeToString() {
+        return time + " hour".concat(time > 1L ? "s" : "");
     }
 }

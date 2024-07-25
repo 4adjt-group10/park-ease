@@ -1,7 +1,8 @@
-package com.parkease.paymentVoucher.application;
+package com.parkease.voucher.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.parkease.paymentVoucher.domain.Voucher;
+import com.parkease.voucher.domain.Voucher;
+import org.springframework.lang.Nullable;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,8 +21,10 @@ public record VoucherDTO(
         BigDecimal currentPrice,
         BigDecimal extraCurrentPrice,
         BigDecimal totalPaid,
-        String driverName,
-        String vehiclePlate
+        @Nullable String driverName,
+        @Nullable String vehiclePlate,
+        @Nullable String driverId,
+        @Nullable String vehicleId
 ) {
 
     public VoucherDTO(Voucher voucher, String driverName, String vehiclePlate) {
@@ -30,11 +33,29 @@ public record VoucherDTO(
                 voucher.getExtraValue(),
                 voucher.getArrivedAt(),
                 voucher.getLeftAt(),
-                voucher.getTime()+" hours",
+                voucher.getTimeToString(),
                 voucher.getCurrentPrice(),
                 voucher.getExtraCurrentPrice(),
                 voucher.getTotalPaid(),
                 driverName,
-                vehiclePlate);
+                vehiclePlate,
+                null,
+                null);
+    }
+
+    public VoucherDTO(Voucher voucher) {
+        this(voucher.getId(),
+                voucher.getValue(),
+                voucher.getExtraValue(),
+                voucher.getArrivedAt(),
+                voucher.getLeftAt(),
+                voucher.getTimeToString(),
+                voucher.getCurrentPrice(),
+                voucher.getExtraCurrentPrice(),
+                voucher.getTotalPaid(),
+                null,
+                null,
+                voucher.getDriverId(),
+                voucher.getVehicleId());
     }
 }

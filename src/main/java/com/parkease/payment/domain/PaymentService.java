@@ -48,11 +48,11 @@ public class PaymentService {
     }
 
     public PaymentDTO findLastByDriver(String id) {
-        return paymentRepository.findFirstByDriverIdOrderByCreationDateDesc(id).map(PaymentDTO::new).orElseThrow(EntityNotFoundException::new);
+        return paymentRepository.findFirstByDriver_IdOrderByCreationDateDesc(id).map(PaymentDTO::new).orElseThrow(EntityNotFoundException::new);
     }
 
     public Payment findLastPaymentByDriver(String id) {
-        return paymentRepository.findFirstByDriverIdOrderByCreationDateDesc(id).orElseThrow(EntityNotFoundException::new);
+        return paymentRepository.findFirstByDriver_IdOrderByCreationDateDesc(id).orElseThrow(EntityNotFoundException::new);
     }
 
     public void processPayment(Payment payment) {
@@ -64,11 +64,11 @@ public class PaymentService {
         paymentRepository.delete(payment);
     }
 
-    public List<Payment> findAllByDriver(String driverId) {
-        return paymentRepository.findAllByDriverIdOrderByCreationDate(driverId);
+    public List<Payment> findAllByDriverId(String driverId) {
+        return paymentRepository.findAllByDriver_IdOrderByCreationDate(driverId);
     }
 
-    public void deleteAll(String driverId) {
-        paymentRepository.deleteAllByDriverId(driverId);
+    public void deleteAllByDriver(String driverId) {
+        paymentRepository.deleteAllByDriver_Id(driverId);
     }
 }
