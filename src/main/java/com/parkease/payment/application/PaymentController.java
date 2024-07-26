@@ -17,7 +17,7 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
-    @GetMapping("/list")
+    @GetMapping("/list-all")
     public ResponseEntity<List<PaymentDTO>> listPayments() {
         return ResponseEntity.ok(paymentService.listPayments());
     }

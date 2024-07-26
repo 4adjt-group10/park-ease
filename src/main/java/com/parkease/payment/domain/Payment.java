@@ -14,19 +14,17 @@ public class Payment {
     private Driver driver;
     private BigDecimal amount;
     private PaymentMethod paymentMethod;
-    private PaymentStatus status;
     private LocalDateTime creationDate;
 
-    public Payment(Driver driver, BigDecimal amount, PaymentMethod paymentMethod, PaymentStatus status) {
+    public Payment(Driver driver, BigDecimal amount, PaymentMethod paymentMethod) {
         this.driver = driver;
         this.amount = amount;
         this.paymentMethod = paymentMethod;
-        this.status = status;
         this.creationDate = LocalDateTime.now();
     }
 
     public Payment(Driver driver, PaymentFormDTO formDTO) {
-        this(driver, formDTO.amount(), formDTO.paymentMethod(), formDTO.status());
+        this(driver, formDTO.amount(), formDTO.paymentMethod());
     }
 
     @Deprecated(since = "For frameworks only")
@@ -53,15 +51,8 @@ public class Payment {
         return paymentMethod;
     }
 
-    public PaymentStatus getStatus() {
-        return status;
-    }
-
     public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
-    public void wasPaid() {
-        this.status = PaymentStatus.PAID;
-    }
 }

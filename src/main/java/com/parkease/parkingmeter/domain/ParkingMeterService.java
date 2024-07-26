@@ -32,7 +32,6 @@ import java.util.logging.Logger;
 import static com.parkease.parkingmeter.application.ParkingMeterType.FIXED_TIME;
 import static com.parkease.parkingmeter.application.ParkingMeterType.VARIABLE_TIME;
 import static com.parkease.payment.domain.PaymentMethod.PIX;
-import static com.parkease.payment.domain.PaymentStatus.PENDING;
 import static java.math.BigDecimal.valueOf;
 import static java.time.LocalDateTime.now;
 
@@ -98,7 +97,7 @@ public class ParkingMeterService {
         }else {
             PriceDTO priceValue = priceService.findCurrentPrice();
             BigDecimal finalPrice = priceValue.value().multiply(valueOf(fixedTime));
-            Payment payment = paymentService.createNewPayment(new PaymentFormDTO(formDTO.driverId(), finalPrice, formDTO.paymentMethod(), PENDING));
+            Payment payment = paymentService.createNewPayment(new PaymentFormDTO(formDTO.driverId(), finalPrice, formDTO.paymentMethod()));
             invoiceService.createInvoice(payment, now());
             ParkingMeter parkingMeter = parkingMeterRepository.save(new ParkingMeter(formDTO, now(), endAt, priceValue.value()));
             return new ParkingMeterDTO(parkingMeter);
@@ -117,7 +116,7 @@ public class ParkingMeterService {
         });
         PaymentMethod newPaymentMethod = paymentMethod.orElse(parkingMeter.getPaymentMethod());
         Payment payment = paymentService
-                .savePayment(new Payment(driver, finalPrice, newPaymentMethod, PENDING));
+                .savePayment(new Payment(driver, finalPrice, newPaymentMethod));
         invoiceService.createInvoice(payment, now());
         Voucher voucher = voucherService.createdVoucherVariable(payment, parkingMeter);
         deleteAll(parkingMeter);
@@ -139,7 +138,7 @@ public class ParkingMeterService {
             }
             BigDecimal finalPrice = getFixedTimeFinalPrice(parkingMeter, now);
             Payment payment = paymentService
-                    .savePayment(new Payment(driver, finalPrice, paymentMethod.get(), PENDING));
+                    .savePayment(new Payment(driver, finalPrice, paymentMethod.get()));
             invoiceService.createInvoice(payment, now);
             List<Payment> payments = paymentService.findAllByDriverId(parkingMeter.getDriverId());
             BigDecimal extraCurrentPrice = payments.get(payments.size() - 1).getAmount()

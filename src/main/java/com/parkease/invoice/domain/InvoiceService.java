@@ -33,7 +33,6 @@ public class InvoiceService {
         invoice.processed();
         logger.info("Invoice processed: " + invoice.getId());
         invoiceRepository.save(invoice);
-        paymentService.processPayment(invoice.getPayment());
     }
 
     public InvoiceDTO getInvoice(String id) {
