@@ -2,7 +2,6 @@ package com.parkease.admin.apllication;
 
 import com.parkease.admin.domain.PriceService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,12 +17,12 @@ public class AdministratorController {
         this.priceService = priceService;
     }
 
-    @GetMapping("/listall")
+    @GetMapping("/list-all")
     public ResponseEntity<List<PriceDTO>> findAllValues() {
         return ResponseEntity.ok(priceService.findAll());
     }
 
-    @GetMapping("/list/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<PriceDTO> findById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(priceService.findPriceById(id));
     }

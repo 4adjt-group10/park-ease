@@ -43,7 +43,7 @@ public class ParkingMeterController {
         return ResponseEntity.ok(parkingMeterService.listAllParkingMeters());
     }
 
-    @GetMapping("/price/{id}")
+    @GetMapping("/resume/{id}")
     public ResponseEntity<BigDecimal> getParkingMeter(@PathVariable String id) {
         return ResponseEntity.ok(parkingMeterService.getFinalPrice(id));
     }

@@ -39,10 +39,6 @@ public class PaymentService {
         return paymentRepository.findById(id).map(PaymentDTO::new).orElseThrow(EntityNotFoundException::new);
     }
 
-    public Optional<Payment> getPossiblePayment(String id) {
-        return paymentRepository.findById(id);
-    }
-
     public List<PaymentDTO> listPayments() {
         return paymentRepository.findAll().stream().map(PaymentDTO::new).toList();
     }
@@ -53,15 +49,6 @@ public class PaymentService {
 
     public Payment findLastPaymentByDriver(String id) {
         return paymentRepository.findFirstByDriver_IdOrderByCreationDateDesc(id).orElseThrow(EntityNotFoundException::new);
-    }
-
-    public void processPayment(Payment payment) {
-        payment.wasPaid();
-        paymentRepository.save(payment);
-    }
-
-    public void delete(Payment payment) {
-        paymentRepository.delete(payment);
     }
 
     public List<Payment> findAllByDriverId(String driverId) {

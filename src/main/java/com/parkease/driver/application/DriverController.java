@@ -17,7 +17,7 @@ public class DriverController {
         this.driverService = driverService;
     }
 
-    @GetMapping("/list")
+    @GetMapping("/list-all")
     public ResponseEntity<List<DriverDTO>> listDrivers() {
         return ResponseEntity.ok(driverService.listDrivers());
     }

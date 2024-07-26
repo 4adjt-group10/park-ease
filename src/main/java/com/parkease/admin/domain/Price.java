@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Entity
 public class Price {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
     private BigDecimal value;
@@ -17,7 +17,6 @@ public class Price {
 
     public Price() {
     }
-
 
     public Price(BigDecimal value, String name, boolean currentPrice) {
         this.value = value;
