@@ -194,7 +194,7 @@ public class ParkingMeterService {
                     long minutesToEnd = ChronoUnit.MINUTES.between(now, parkingMeter.getEndAt());
                     return minutesToEnd <= 10;
                 }).forEach(parkingMeter -> {
-                    logger.warning("ParkingMeter " + parkingMeter.getId() + " is late");
+                    logger.warning("ParkingMeter " + parkingMeter.getId() + " will be late");
                     logger.info("Sending alert message to external service");
                 });
         parkingMeterRepository.findAllByTypeAndEndAtBefore(FIXED_TIME, now)
