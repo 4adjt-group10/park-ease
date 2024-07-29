@@ -136,7 +136,7 @@ obs: pode-se cadastrar o condutor junto do veiculo ou separado.
  - Selecione o tipo de pagamento (Pix/Cartão) ,sendo pix somente aceito na modalidade de tempo fixo
  - Para o caso de tempo fixo , temos que preencher a variavel de tempo estacionado(timeParking), este valor e um numerico sem casas decimais, que sera o total de horas estacionado
 
-### 4. Sistema realizara o monitoramento automatico de 10min em 10min 
+### 4. Sistema realizara o monitoramento automatico de 5min em 5min 
  - Os avisos de monitoramento são exibidos no terminal da aplicação. 
 
 ### 5. Quando o fluxo é encerrado, o sistema gera um recibo com as informações podendo variar de acordo com o tipo de parada selecionado, conforme os seguintes cenários:
